@@ -1,0 +1,326 @@
+{% extends 'boutique/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="trash-container">
+    <!-- En-tête avec animation -->
+    <div class="trash-header animate__animated animate__fadeInDown">
+        <div class="header-content">
+            <i class="fas fa-trash-restore trash-icon"></i>
+            <h1>Corbeille</h1>
+            <span class="item-count">{{ produits.count }} élément(s)</span>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'gestion_produits' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Retour aux produits
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="trash-content">
+        {% if produits %}
+            <!-- Liste des produits supprimés -->
+            <div class="deleted-items">
+                {% for produit in produits %}
+                <div class="deleted-item animate__animated animate__fadeIn">
+                    <div class="product-preview">
+                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="product-image">
+                        <div class="product-info">
+                            <h3>{{ produit.nom }}</h3>
+                            <p class="delete-date">Supprimé le {{ produit.date_suppression|date:"d/m/Y à H:i" }}</p>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <a href="{% url 'restaurer_produit' produit.pk %}" class="restore-btn">
+                            <i class="fas fa-undo"></i> Restaurer
+                        </a>
+                        <a href="{% url 'supprimer_definitivement' produit.pk %}" class="delete-btn" 
+                           onclick="return confirm('Supprimer définitivement ce produit ?')">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Bouton vider la corbeille -->
+            <div class="empty-trash-container">
+                <form method="post" action="{% url 'vider_corbeille' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="empty-trash-btn" 
+                            onclick="return confirm('Vider toute la corbeille ? Cette action est irréversible.')">
+                        <i class="fas fa-broom"></i> Vider la corbeille
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <!-- État vide - corbeille vide -->
+            <div class="empty-state animate__animated animate__fadeIn">
+                <img src="{% static 'images/empty-trash.svg' %}" alt="Corbeille vide" class="empty-icon">
+                <h2>Corbeille vide</h2>
+                <p>Aucun produit n'a été supprimé</p>
+                <a href="{% url 'gestion_produits' %}" class="back-to-products">
+                    Retour à la gestion des produits
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #6c5ce7;
+        --danger-color: #ff7675;
+        --success-color: #00b894;
+        --light-gray: #f5f6fa;
+        --dark-gray: #2d3436;
+    }
+
+    .trash-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .trash-header {
+        background: linear-gradient(135deg, var(--primary-color), #a29bfe);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .trash-icon {
+        font-size: 2rem;
+    }
+
+    .trash-header h1 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .item-count {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .back-btn {
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .back-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .deleted-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .deleted-item {
+        background-color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        border-left: 4px solid var(--danger-color);
+    }
+
+    .deleted-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-preview {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-image {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+
+    .product-info h3 {
+        margin: 0 0 0.3rem 0;
+        color: var(--dark-gray);
+    }
+
+    .delete-date {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+    }
+
+    .item-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: auto;
+    }
+
+    .restore-btn, .delete-btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .restore-btn {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .restore-btn:hover {
+        background-color: #00997b;
+        transform: translateY(-2px);
+    }
+
+    .delete-btn {
+        background-color: var(--danger-color);
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background-color: #e84393;
+        transform: translateY(-2px);
+    }
+
+    .empty-trash-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .empty-trash-btn {
+        background-color: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.8rem;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .empty-trash-btn:hover {
+        background-color: #e84393;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 118, 117, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .empty-icon {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 1.5rem;
+        opacity: 0.7;
+    }
+
+    .empty-state h2 {
+        color: var(--dark-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #7f8c8d;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-to-products {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .back-to-products:hover {
+        text-decoration: underline;
+    }
+
+    /* Animations */
+    .animate__animated {
+        animation-duration: 0.5s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate__fadeIn {
+        animation-name: fadeIn;
+    }
+
+    .animate__fadeInDown {
+        animation-name: fadeInDown;
+    }
+
+    @media (max-width: 768px) {
+        .trash-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .deleted-items {
+            grid-template-columns: 1fr;
+        }
+        
+        .product-preview {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- Inclure animate.css pour les animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+{% endblock %}

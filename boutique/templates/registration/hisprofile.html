@@ -1,0 +1,150 @@
+{% extends 'boutique/base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h2 id="welcomeTitle" class="display-4">Bienvenue sur votre profil, {{ user.username }} !</h2>
+            <p id="fullName" class="lead">Vous êtes connecté en tant que Vendeur! {{ user.get_full_name }}</p>
+        </div>
+        
+        <!-- Profile Picture Upload Section -->
+        <div class="d-flex justify-content-center mb-4">
+            <form method="POST" enctype="multipart/form-data" id="profilePicForm">
+                {% csrf_token %}
+                <div class="text-center">
+                    <img src="{{ user.profile_picture.url }}" alt="Photo de profil" class="rounded-circle" width="150" height="150" id="profilePic">
+                    <input type="file" name="profile_picture" class="form-control mt-2" id="profilePicInput">
+                    <button type="submit" class="btn btn-secondary mt-2">Mettre à jour la photo</button>
+                </div>
+            </form>
+            <div id="uploadMessage" class="text-center mt-2"></div>
+        </div>
+        
+        <!-- Additional Information Form -->
+        <div class="card p-4 mb-4">
+            <h4 class="mb-3">Informations du profil</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Nom Complet</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.get_full_name }}">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Numéro de téléphone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.profile.phone }}">
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Adresse</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ user.profile.address }}">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Nouveau mot de passe</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+                <button type="submit" class="btn btn-secondary">Mettre à jour</button>
+            </form>
+        </div>
+        
+        <!-- Animated Button with Hover Effect -->
+        <div class="d-flex justify-content-center">
+            <a href="{% url 'dashboard' %}" class="btn btn-lg" id="dashboardButton" style="background-color: #FF8C00; color: white;">
+                <i class="bi bi-house-door"></i> Accéder à votre tableau de bord
+            </a>
+        </div>
+    </div>
+
+    <!-- Custom CSS for additional styling -->
+    <style>
+        #welcomeTitle {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        #fullName {
+            color: #7f8c8d;
+        }
+
+        #dashboardButton {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #dashboardButton:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            animation: fadeIn 2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Additional styles for profile picture upload */
+        #uploadMessage {
+            color: #28a745; /* Green color for success message */
+            font-weight: bold;
+        }
+    </style>
+
+    <!-- GSAP Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.0/gsap.min.js"></script>
+    <script>
+        // GSAP animation for title and full name
+        gsap.from("#welcomeTitle", { opacity: 0, y: -50, duration: 1.5 });
+        gsap.from("#fullName", { opacity: 0, y: 50, duration: 1.5, delay: 0.5 });
+
+        // Adding animation to the button on hover
+        document.getElementById('dashboardButton').addEventListener('mouseenter', function() {
+            gsap.to("#dashboardButton", { scale: 1.1, duration: 0.3 });
+        });
+        
+        document.getElementById('dashboardButton').addEventListener('mouseleave', function() {
+            gsap.to("#dashboardButton", { scale: 1, duration: 0.3 });
+        });
+
+        // Update profile picture preview
+        document.getElementById('profilePicInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePic').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle profile picture upload feedback
+        document.getElementById('profilePicForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('uploadMessage').innerText = "Photo de profil mise à jour avec succès !";
+                } else {
+                    document.getElementById('uploadMessage').innerText = "Erreur lors de la mise à jour de la photo.";
+                }
+            })
+            .catch(error => {
+                document.getElementById('uploadMessage').innerText = "Erreur lors de la mise à jour de la photo.";
+            });
+        });
+    </script>
+{% endblock %}

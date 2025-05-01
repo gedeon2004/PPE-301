@@ -1,0 +1,94 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Section */
+header {
+    border-bottom: 2px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+header .logo {
+    transition: transform 0.3s ease-in-out;
+}
+
+header .logo:hover {
+    transform: scale(1.05);
+}
+
+header h1 {
+    font-size: 2.5rem; /* Agrandi pour plus d'impact */
+    letter-spacing: 1px;
+    color: #ff6f00; /* Couleur orange du logo */
+}
+
+/* Main Content */
+.main-content {
+    min-height: 60vh;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Tables */
+.table {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table thead th {
+    background-color: #343a40;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.table img {
+    transition: transform 0.3s ease-in-out;
+}
+
+.table img:hover {
+    transform: scale(1.1);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.alert p {
+    margin-bottom: 0;
+}

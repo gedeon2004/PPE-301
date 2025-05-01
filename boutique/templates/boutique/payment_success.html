@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Réussi - BigShop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF6B00;
+            --orange-light: #FF8C42;
+            --black: #000000;
+            --white: #FFFFFF;
+            --gray: #F5F5F5;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gray);
+            color: var(--black);
+        }
+        
+        .receipt-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .receipt-header {
+            background: var(--orange);
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 3px solid var(--black);
+        }
+        
+        .receipt-body {
+            padding: 2rem;
+        }
+        
+        .receipt-title {
+            color: var(--orange);
+            border-bottom: 2px solid var(--orange);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .receipt-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .receipt-product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            margin-right: 1rem;
+        }
+        
+        .receipt-total {
+            background: var(--gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 2rem;
+        }
+        
+        .seller-info {
+            background: var(--gray);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .btn-orange {
+            background: var(--orange);
+            color: var(--white);
+            border: none;
+            font-weight: 500;
+        }
+        
+        .btn-orange:hover {
+            background: var(--orange-light);
+            color: var(--white);
+        }
+        
+        .badge-orange {
+            background: var(--orange);
+            color: var(--white);
+        }
+        
+        @media print {
+            body {
+                background: none;
+                font-size: 12px;
+            }
+            .receipt-container {
+                box-shadow: none;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .receipt-header {
+                padding: 1rem;
+            }
+            .receipt-body {
+                padding: 1rem;
+            }
+            .receipt-title {
+                font-size: 1.5rem;
+            }
+            .receipt-info {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .receipt-total {
+                padding: 1rem;
+                margin-top: 1rem;
+            }
+            .receipt-item-img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <div class="receipt-header">
+            <h2><i class="fas fa-check-circle me-2"></i>Paiement confirmé</h2>
+            <p class="mb-0">Merci pour votre achat chez BigShop</p>
+        </div>
+        
+        <div class="receipt-body">
+            <!-- Version impression (visible seulement à l'impression) -->
+            <div id="facture" class="d-none d-print-block">
+                <div class="text-center mb-3">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo BigShop" style="height: 200px;">
+                    <h2 class="receipt-title mt-2" style="font-size: 1.5rem;">FACTURE</h2>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <h5 style="font-size: 1rem;"><u>CLIENT</u></h5>
+                        <p>Nom Complet : <strong>{{ order.client_prenom }} {{ order.client_nom }}</strong></p>
+                        <p>Numéro de téléphone : <strong>{{ order.client_telephone }}</strong></p>
+                        <p>Adresse de livraison: <strong>{{ order.client_adresse }}</strong></p>
+                        <p>Email: <strong>{{ order.client_email }}</strong></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 style="font-size: 1rem;"><u>VENDEUR</u></h5>
+                        <p>Identifiant: {{ order.vendeur.get_full_name|default:order.vendeur.username }}</p>
+                        <p>Email: {{ order.vendeur.email }}></p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <h5 style="font-size: 1rem;">COMMANDE</h5>
+                        <p><strong>Référence:</strong> #{{ order.id }}</p>
+                        <p><strong>Date:</strong> {{ order.date_commande|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Transaction:</strong> {{ order.transaction_id }}</p>
+                    </div>
+                </div>
+                
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if order.produit.image %}
+                                    <img src="{{ order.produit.image.url }}" alt="{{ order.produit.nom }}" 
+                                         class="receipt-item-img me-2">
+                                    {% else %}
+                                    <div class="receipt-item-img bg-light d-flex align-items-center justify-content-center me-2">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ order.produit.nom }}</strong><br>
+                                        <small>Catégorie: {{ order.produit.categorie }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ order.produit.prix }} FCFA</td>
+                            <td>{{ order.quantite }}</td>
+                            <td>{{ order.total }} FCFA</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>TOTAL</strong></td>
+                            <td><strong>{{ order.total }} FCFA</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="mt-3 pt-2 border-top">
+                    <p class="small text-muted mb-1">Cette facture est valable comme justificatif d'achat.</p>
+                    <p class="small text-muted">Pour toute question, contactez le vendeur: {{ order.vendeur.email }}</p>
+                </div>
+            </div>
+            
+            <!-- Version écran -->
+            <div class="d-print-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="receipt-title">Récapitulatif de commande</h3>
+                    <span class="badge badge-orange p-2">{{ order.status }}</span>
+                </div>
+                
+                <div class="receipt-info">
+                    <div>
+                        <h5><i class="fas fa-user me-2"></i>Client</h5>
+                        <p><strong>Nom : {{ order.client_nom }} {{order.client_prenom}}</strong></p>
+                        <p><strong>Téléphone : {{ order.client_telephone }}</strong></p>
+                        <p><strong>Adresse: {{ order.client_adresse }}</strong></p>
+                        <p><strong>Email :{{ order.client_email }}</strong></p>
+                    </div>
+                    <div class="text-end">
+                        <h5><i class="fas fa-receipt me-2"></i>Commande</h5>
+                        <p>Réf: #{{ order.id }}</p>
+                        <p>Date: {{ order.date_commande|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                
+                <div class="seller-info">
+                    <h5><i class="fas fa-store me-2"></i>Vendeur</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-user-circle fa-3x text-muted"></i>
+                        </div>
+                        <div>
+                            <p class="mb-1"><strong>ID: {{ order.vendeur.get_full_name|default:order.vendeur.username }}</strong></p>
+                            <p class="mb-1">Email: {{ order.vendeur.email }}</p>
+                            <p class="mb-0 small">Vendeur certifié BigShop</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4"><i class="fas fa-shopping-bag me-2"></i>Produit</h5>
+                <div class="d-flex mb-4 pb-3 border-bottom">
+                    {% if order.produit.image %}
+                    <img src="{{ order.produit.image.url }}" alt="{{ order.produit.nom }}" class="receipt-product-img">
+                    {% else %}
+                    <div class="receipt-product-img bg-light d-flex align-items-center justify-content-center">
+                        <i class="fas fa-image text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h5>{{ order.produit.nom }}</h5>
+                        <p class="text-muted mb-1">Catégorie: {{ order.produit.categorie }}</p>
+                        <p class="mb-1">Prix unitaire: {{ order.produit.prix }} FCFA</p>
+                        <p>Quantité: {{ order.quantite }}</p>
+                    </div>
+                </div>
+                
+                <div class="receipt-total">
+                    <h4 class="mb-0">Total: {{ order.total }} FCFA</h4>
+                    <p class="mb-0 small">Transaction: {{ order.transaction_id }}</p>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4 no-print">
+                    <button onclick="window.print()" class="btn btn-orange">
+                        <i class="fas fa-print me-2"></i>Imprimer la facture
+                    </button>
+                    <a href="{% url 'index' %}" class="btn btn-dark">
+                        <i class="fas fa-home me-2"></i>Retour à l'accueil
+                    </a>
+                </div>
+                
+                <div class="mt-4 pt-3 border-top text-center no-print">
+                    <p class="small text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Un email de confirmation a été envoyé à {{ order.client.email }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.receipt-header');
+            header.style.transform = 'translateY(-20px)';
+            header.style.opacity = '0';
+            header.style.transition = 'all 0.5s ease';
+            
+            setTimeout(() => {
+                header.style.transform = 'translateY(0)';
+                header.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

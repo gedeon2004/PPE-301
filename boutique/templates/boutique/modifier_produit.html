@@ -1,0 +1,137 @@
+{% extends 'boutique/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.0/gsap.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .product-form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: white;
+            border-radius: 12px;
+            border: 4px solid #ff7f00;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: zoomIn 1s ease-out forwards;
+        }
+
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 2px solid #ff7f00;
+        }
+
+        .btn-submit {
+            background-color: #ff7f00;
+            color: white;
+            font-size: 16px;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: #e67500;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Modifier le Produit</h2>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body product-form-container">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="id_nom" class="form-label">Nom du Produit</label>
+                                {{ form.nom|add_class:"form-control" }}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_prix" class="form-label">Prix (FCFA)</label>
+                                {{ form.prix|add_class:"form-control" }}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_quantite_en_stock" class="form-label">Stock</label>
+                                {{ form.quantite_en_stock|add_class:"form-control" }}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_image" class="form-label">Image actuelle</label>
+                                {% if produit.image %}
+                                    <div class="mb-2">
+                                        <img src="{{ produit.image.url }}" alt="Image actuelle" class="img-fluid" style="max-width: 200px; border-radius: 8px;">
+                                    </div>
+                                {% endif %}
+                                <label for="id_image" class="form-label">Changer l'image</label>
+                                {{ form.image|add_class:"form-control" }}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_categorie" class="form-label">Catégorie</label>
+                                {{ form.categorie|add_class:"form-control" }}
+                            </div>
+
+                            <button type="submit" class="btn-submit">Mettre à Jour</button>
+
+                            {% if form.errors %}
+                                <div class="error-message mt-3">
+                                    <ul>
+                                        {% for field, errors in form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        gsap.from(".product-form-container", { opacity: 0, y: -50, duration: 1.5, ease: "power4.out" });
+    </script>
+
+{% endblock %}

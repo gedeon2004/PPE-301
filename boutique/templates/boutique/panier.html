@@ -1,0 +1,133 @@
+{% block content %}
+
+    {% load static %}
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../styles/vendor.css">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+        <title>Mon Panier</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+            }
+
+            .cart-detail {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+                transition: transform 0.3s;
+            }
+
+            .cart-detail:hover {
+                transform: scale(1.02);
+            }
+
+            .table th, .table td {
+                vertical-align: middle;
+            }
+
+            .total {
+                font-weight: bold;
+                font-size: 1.5rem;
+                color: #ff7f00;
+            }
+
+            .btn-custom {
+                background-color: #ff7f00;
+                border-color: #ff7f00;
+                transition: background-color 0.3s;
+            }
+
+            .btn-custom:hover {
+                background-color: #e67500;
+                border-color: #e67500;
+            }
+
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container py-5">
+            <div class="cart-detail fade-in">
+                <h2 class="text-center">Mon Panier</h2>
+
+                {% if items %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Produit</th>
+                                <th scope="col">Prix</th>
+                                <th scope="col">Quantité</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr class="fade-in">
+                                    <td>{{ item.produit.nom }}</td>
+                                    <td>{{ item.produit.prix }} FCFA</td>
+                                    <td>{{ item.quantite }}</td>
+                                    
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" onclick="confirmRemove('{{ item.produit.nom }}', '{% url 'retirer_du_panier' item.produit.id %}')">Retirer</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="total fade-in">
+                                <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                                <td>{{ total }} FCFA</td>  <!-- Total calculé dans la vue -->
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="text-center">
+                        <a href="{% url 'client' %}" class="btn btn-custom">Continuer les Achats</a>
+                        <a href="#" class="btn btn-success">Finaliser la Commande</a>
+                    </div>
+                {% else %}
+                    <p class="text-center">Votre panier est vide.</p>
+                    <div class="text-center">
+                        <a href="{% url 'client' %}" class="btn btn-custom">Continuer les Achats</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            function confirmRemove(productName, url) {
+                if (confirm("Êtes-vous sûr de vouloir retirer " + productName + " du panier ?")) {
+                    window.location.href = url;
+                }
+            }
+        </script>
+    </body>
+    </html>
+
+{% endblock %}

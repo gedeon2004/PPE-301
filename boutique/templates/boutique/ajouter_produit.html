@@ -1,0 +1,729 @@
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- CSS Libraries -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+:root {
+  --primary-color: #FF6B00;
+  --secondary-color: #FF9E40;
+  --accent-color: #FFD166;
+  --dark-color: #2F4858;
+  --light-color: #F7F9FC;
+  --success-color: #06D6A0;
+  --error-color: #EF476F;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(135deg, #FF8C00, #FF6347);
+  color: white;
+  min-height: 100vh;
+  position: fixed;
+  box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar:hover {
+  width: 280px;
+}
+
+.sidebar-brand {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.sidebar-brand img {
+  width: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  border: 3px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+}
+
+.sidebar-brand h4 {
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar:hover .sidebar-brand h4 {
+  font-size: 1.3rem;
+}
+
+.sidebar-nav {
+  padding: 20px 0;
+  list-style: none;
+}
+
+.sidebar-nav li {
+  position: relative;
+  margin: 8px 0;
+}
+
+.sidebar-nav a {
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  margin: 0 10px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.sidebar-nav a i {
+  margin-right: 12px;
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.sidebar-nav a:hover {
+  background-color: rgba(255,255,255,0.15);
+  transform: translateX(5px);
+}
+
+.sidebar-nav .active {
+  background-color: rgba(255,255,255,0.25);
+  font-weight: 600;
+}
+
+/* Submenu */
+.submenu {
+  display: none;
+  padding-left: 15px;
+  list-style: none;
+  margin-top: 5px;
+  animation: fadeIn 0.3s ease;
+}
+
+.submenu a {
+  padding: 10px 15px 10px 45px;
+  font-size: 0.9rem;
+  background-color: rgba(0,0,0,0.1);
+  margin: 5px 0;
+  position: relative;
+}
+
+.submenu a::before {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.submenu a:hover {
+  background-color: rgba(0,0,0,0.2);
+}
+
+.has-submenu > a::after {
+  content: '\f078';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  right: 20px;
+  transition: transform 0.3s ease;
+}
+
+.has-submenu.active > a::after {
+  transform: rotate(180deg);
+}
+
+.has-submenu.active .submenu {
+  display: block;
+}
+
+/* Main Content Styles */
+.main-content {
+  margin-left: 250px;
+  padding: 30px;
+  transition: all 0.3s ease;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.sidebar:hover ~ .main-content {
+  margin-left: 280px;
+}
+
+/* Form Styles */
+.product-form-wrapper {
+  display: flex;
+  min-height: calc(100vh - 60px);
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.form-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 1.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-header::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(30deg);
+}
+
+.form-title {
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.form-title i {
+  margin-right: 12px;
+  font-size: 1.5rem;
+}
+
+.form-body {
+  padding: 2.5rem;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.8rem;
+  position: relative;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+  font-size: 0.95rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  border: 2px solid #e0e6ed;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+  background-color: white;
+  outline: none;
+}
+
+/* File Input Customization */
+.custom-file-container {
+  margin-top: 10px;
+}
+
+.custom-file-upload {
+  display: block;
+  padding: 12px;
+  border: 2px dashed #e0e6ed;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: #f8fafc;
+}
+
+.custom-file-upload:hover {
+  border-color: var(--primary-color);
+  background-color: white;
+}
+
+.custom-file-upload i {
+  font-size: 24px;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.custom-file-upload .file-info {
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.file-input {
+  display: none;
+}
+
+/* Preview Section */
+.image-preview-container {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.image-preview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 2px solid #e0e6ed;
+  display: none;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  padding: 5px;
+}
+
+/* Submit Button */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+/* Error Handling */
+.error-message {
+  color: var(--error-color);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.error-message i {
+  font-size: 1rem;
+}
+
+.is-invalid {
+  border-color: var(--error-color) !important;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 80px;
+    overflow: hidden;
+  }
+  
+  .sidebar:hover {
+    width: 280px;
+  }
+  
+  .sidebar-brand h4, 
+  .sidebar-nav a span {
+    display: none;
+  }
+  
+  .sidebar:hover .sidebar-brand h4,
+  .sidebar:hover .sidebar-nav a span {
+    display: block;
+  }
+  
+  .sidebar-nav a {
+    justify-content: center;
+  }
+  
+  .sidebar:hover .sidebar-nav a {
+    justify-content: flex-start;
+  }
+  
+  .main-content {
+    margin-left: 80px;
+  }
+  
+  .sidebar:hover ~ .main-content {
+    margin-left: 280px;
+  }
+  
+  .has-submenu > a::after {
+    display: none;
+  }
+  
+  .sidebar:hover .has-submenu > a::after {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-form-wrapper {
+    padding: 1rem;
+  }
+  
+  .form-body {
+    padding: 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 1.5rem;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    z-index: 1001;
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .sidebar-toggle {
+    display: block !important;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+}
+
+/* Mobile Toggle Button */
+.sidebar-toggle {
+  display: none;
+}
+</style>
+
+<!-- Sidebar Toggle Button (Mobile) -->
+<button class="sidebar-toggle" id="sidebarToggle">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <img src="https://via.placeholder.com/150" alt="Logo">
+    <h4>Vendeur Pro</h4>
+  </div>
+  
+  <ul class="sidebar-nav">
+    <li><a href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i> <span>Tableau de Bord</span></a></li>
+    <li><a href="#"><i class="bi bi-shop"></i> <span>Boutique</span></a></li>
+    <li class="has-submenu active">
+      <a href="#"><i class="bi bi-box-seam"></i> <span>Produits</span></a>
+      <ul class="submenu">
+        <li><a href="{% url 'ajouter_produit' %}" class="active"><i class="bi bi-plus-circle"></i> Ajouter Produit</a></li>
+        <li><a href="{% url 'gestion_produits' %}"><i class="bi bi-list-ul"></i> Liste des Produits</a></li>
+      </ul>
+    </li>
+    <li><a href="#"><i class="bi bi-cart"></i> <span>Commandes</span></a></li>
+    <li><a href="#"><i class="bi bi-truck"></i> <span>Livraisons</span></a></li>
+    <li><a href="#"><i class="bi bi-credit-card"></i> <span>Paiements</span></a></li>
+    <li><a href="{% url 'hisprofile' %}"><i class="bi bi-person"></i> <span>Profil</span></a></li>
+    <li><a href="{% url 'login' %}" id="logout-link"><i class="bi bi-box-arrow-right"></i> <span>Déconnexion</span></a></li>
+  </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="product-form-wrapper">
+    <div class="form-card animate__animated">
+      <div class="form-header">
+        <h1 class="form-title"><i class="bi bi-plus-circle"></i> Nouveau Produit</h1>
+      </div>
+      
+      <div class="form-body">
+        <form method="post" enctype="multipart/form-data" id="productForm">
+          {% csrf_token %}
+          
+          <!-- Product Name -->
+          <div class="form-group">
+            <label class="form-label">Nom du Produit</label>
+            {{ form.nom|add_class:"form-control"|attr:"placeholder:Entrez le nom du produit" }}
+            {% if form.nom.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ form.nom.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Price -->
+          <div class="form-group">
+            <label class="form-label">Prix (FCFA)</label>
+            {{ form.prix|add_class:"form-control"|attr:"placeholder:Entrez le prix en FCFA"|attr:"min:0"|attr:"step:0.01" }}
+            {% if form.prix.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ form.prix.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Stock -->
+          <div class="form-group">
+            <label class="form-label">Quantité en Stock</label>
+            {{ form.quantite_en_stock|add_class:"form-control"|attr:"placeholder:Entrez la quantité disponible"|attr:"min:0" }}
+            {% if form.quantite_en_stock.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ form.quantite_en_stock.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label">Catégorie</label>
+            {{ form.categorie|add_class:"form-control" }}
+            {% if form.categorie.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ form.categorie.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Image Upload -->
+          <div class="form-group">
+            <label class="form-label">Image du Produit</label>
+            <div class="custom-file-container">
+              <label for="id_image" class="custom-file-upload">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <div class="file-info" id="fileInfo">Cliquez pour télécharger une image</div>
+              </label>
+              {{ form.image|add_class:"file-input" }}
+            </div>
+            <div class="image-preview-container">
+              <img id="imagePreview" class="image-preview" alt="Aperçu de l'image">
+            </div>
+            {% if form.image.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ form.image.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Description -->
+          <div class="form-group">
+            <label class="form-label">Description du Produit</label>
+            {{ form.description|add_class:"form-control"|attr:"rows:3"|attr:"placeholder:Décrivez votre produit en détail..." }}
+            {% if form.description.errors %}
+              <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ form.description.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Submit Button -->
+          <button type="submit" class="btn-submit">
+            <i class="bi bi-check-circle"></i> Ajouter le Produit
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Animation
+  gsap.from(".form-card", {
+    duration: 1,
+    y: 50,
+    opacity: 0,
+    ease: "back.out(1.7)"
+  });
+  
+  // Image upload functionality
+  const imageInput = document.getElementById('id_image');
+  const imagePreview = document.getElementById('imagePreview');
+  const fileInfo = document.getElementById('fileInfo');
+  
+  imageInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = 'block';
+      }
+      
+      reader.readAsDataURL(this.files[0]);
+      fileInfo.textContent = this.files[0].name;
+    }
+  });
+  
+  // Form validation
+  const form = document.getElementById('productForm');
+  form.addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Check required fields
+    const requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        field.classList.add('is-invalid');
+        isValid = false;
+      }
+    });
+    
+    // Check for negative values in price and quantity
+    const priceField = form.querySelector('input[name="prix"]');
+    const quantityField = form.querySelector('input[name="quantite_en_stock"]');
+    
+    if (priceField && parseFloat(priceField.value) < 0) {
+      priceField.classList.add('is-invalid');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Le prix ne peut pas être négatif';
+      priceField.parentNode.appendChild(errorDiv);
+      isValid = false;
+    }
+    
+    if (quantityField && parseInt(quantityField.value) < 0) {
+      quantityField.classList.add('is-invalid');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> La quantité ne peut pas être négative';
+      quantityField.parentNode.appendChild(errorDiv);
+      isValid = false;
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+      // Add shake animation to invalid fields
+      gsap.to('.is-invalid', {
+        x: [-5, 5, -5, 5, 0],
+        duration: 0.4,
+        ease: "power1.inOut"
+      });
+      
+      // Scroll to first error
+      const firstError = document.querySelector('.is-invalid');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+  
+  // Remove invalid class when user starts typing
+  const inputs = form.querySelectorAll('input, textarea, select');
+  inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      if (this.classList.contains('is-invalid')) {
+        this.classList.remove('is-invalid');
+        const errorMsg = this.parentNode.querySelector('.error-message');
+        if (errorMsg && !errorMsg.dataset.serverError) {
+          errorMsg.remove();
+        }
+      }
+    });
+  });
+  
+  // Prevent negative numbers
+  const numberInputs = form.querySelectorAll('input[type="number"]');
+  numberInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      if (parseFloat(this.value) < 0) {
+        this.value = 0;
+      }
+    });
+  });
+  
+  // Logout confirmation
+  document.getElementById('logout-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    if(confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+      window.location.href = this.href;
+    }
+  });
+  
+  // Mobile sidebar toggle
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('active');
+    });
+  }
+  
+  // Mark server-side errors
+  document.querySelectorAll('.error-message').forEach(el => {
+    el.dataset.serverError = 'true';
+  });
+});
+</script>
+{% endblock %}

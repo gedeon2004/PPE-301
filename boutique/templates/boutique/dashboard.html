@@ -1,0 +1,749 @@
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Vendeur</title>
+    <!-- Liens CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF8C00;
+            --secondary-color: #FFD700;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #FF8C00, #FF6347);
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .sidebar:hover {
+            width: 280px;
+        }
+        
+        .sidebar-brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-brand img {
+            width: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        
+        .sidebar-nav li {
+            margin: 5px 0;
+        }
+        
+        .sidebar-nav a {
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-radius: 5px;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-nav a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .sidebar-nav a:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-nav .active {
+            background-color: rgba(255,255,255,0.3);
+            font-weight: bold;
+        }
+        
+        /* Submenu */
+        .submenu {
+            display: none;
+            padding-left: 20px;
+        }
+        
+        .submenu a {
+            padding: 8px 15px;
+            font-size: 14px;
+            background-color: rgba(0,0,0,0.1);
+            margin: 3px 0;
+        }
+        
+        .has-submenu:hover .submenu {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar:hover ~ .main-content {
+            margin-left: 280px;
+        }
+        
+        /* Top Navigation */
+        .top-nav {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding-right: 40px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-badge, .message-badge {
+            position: relative;
+            margin-right: 20px;
+            font-size: 20px;
+            color: #555;
+        }
+        
+        .badge-counter {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon.blue {
+            background-color: #4285F4;
+        }
+        
+        .card-icon.green {
+            background-color: #34A853;
+        }
+        
+        .card-icon.orange {
+            background-color: #FBBC05;
+        }
+        
+        .card-icon.red {
+            background-color: #EA4335;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card-label {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        /* Charts */
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .chart-title {
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        /* Recent Orders */
+        .recent-orders {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .order-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+        
+        .status-processing {
+            background-color: #CCE5FF;
+            color: #004085;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                overflow: hidden;
+            }
+            
+            .sidebar:hover {
+                width: 280px;
+            }
+            
+            .sidebar-brand span, 
+            .sidebar-nav a span {
+                display: none;
+            }
+            
+            .sidebar:hover .sidebar-brand span,
+            .sidebar:hover .sidebar-nav a span {
+                display: inline;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .sidebar:hover ~ .main-content {
+                margin-left: 280px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .user-menu {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <img src="https://via.placeholder.com/150" alt="Logo">
+                <h4>Vendeur Pro</h4>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li><a href="#" class="active"><i class="uil uil-dashboard"></i> <span>Tableau de Bord</span></a></li>
+                <li><a href="#"><i class="uil uil-shopping-bag"></i> <span>Boutique</span></a></li>
+                <li class="has-submenu">
+                    <a href="#"><i class="uil uil-box"></i> <span>Produits</span> <i class="uil uil-angle-down float-right"></i></a>
+                    <ul class="submenu">
+                        <li><a href="{% url 'gestion_produits' %}"><i class="uil uil-plus-circle"></i> Ajouter Produit</a></li>
+                        <li><a href="#"><i class="uil uil-list-ul"></i> Liste des Produits</a></li>
+                        <li><a href="{% url 'corbeille_produits' %}"><i class="uil uil-trash-alt"></i> Corbeille</a></li>
+                    </ul>
+                </li>
+                <li><a href="#"><i class="uil uil-shopping-cart"></i> <span>Commandes</span></a></li>
+                <li><a href="#"><i class="uil uil-truck"></i> <span>Livraisons</span></a></li>
+                <li><a href="#"><i class="uil uil-bill"></i> <span>Paiements</span></a></li>
+                <li>
+                    <a href="#">
+                        <i class="uil uil-bell"></i> Notifications
+                        {% if notifications_non_lues.count > 0 %}
+                        <span class="badge bg-danger float-end">{{ notifications_non_lues.count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li><a href="#"><i class="uil uil-chart-line"></i> <span>Statistiques</span></a></li>
+                <li><a href="#"><i class="uil uil-comment-alt"></i> <span>Avis Clients</span></a></li>
+                <li><a href="{% url 'hisprofile' %}"><i class="uil uil-user"></i> <span>Profil</span></a></li>
+                <li><a href="{% url 'login' %}" id="logout-link"><i class="uil uil-sign-out-alt"></i> <span>Déconnexion</span></a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div class="search-box">
+                    <input type="text" placeholder="Rechercher...">
+                    <i class="uil uil-search"></i>
+                </div>
+                
+                <div class="user-menu">
+                    <div class="notification-badge">
+                        
+                            <i class="uil uil-bell"></i>
+                            {% if unread_notifications.count > 0 %}
+                            <span class="badge-counter">{{ unread_notifications.count }}</span>
+                            {% endif %}
+                           
+                    </div>
+                    
+                    <div class="message-badge">
+                        <i class="uil uil-envelope"></i>
+                        <span class="badge-counter">5</span>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <img src="{{ request.user.profile.image.url|default:'https://via.placeholder.com/150' }}" alt="Profile">
+                        <div>
+                            <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                            <small>Vendeur</small>
+                        </div>
+                        <i class="uil uil-angle-down ml-2"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div class="container py-5">
+                <!-- Stats Cards -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="dashboard-card">
+                            <div class="card-icon blue">
+                                <i class="uil uil-shopping-bag"></i>
+                            </div>
+                            <div class="card-value">{{ total_produits }}</div>
+                            <div class="card-label">Produits</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="dashboard-card">
+                            <div class="card-icon green">
+                                <i class="uil uil-shopping-cart"></i>
+                            </div>
+                            <div class="card-value" id="ventes-mois">{{ revenus_mois|floatformat:2 }} FCFA</div>
+                            <div class="card-label">Ventes ce mois</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="dashboard-card">
+                            <div class="card-icon orange">
+                                <i class="uil uil-truck"></i>
+                            </div>
+                            <div class="card-value">{{ commandes_en_cours }}</div>
+                            <div class="card-label">Commandes en cours</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="dashboard-card">
+                            <div class="card-icon red">
+                                <i class="uil uil-comment-alt"></i>
+                            </div>
+                            <div class="card-value">{{ avis_recents.count }}</div>
+                            <div class="card-label">Nouveaux avis</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Row -->
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <h5 class="chart-title">Ventes des 30 derniers jours</h5>
+                            <canvas id="salesChart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <h5 class="chart-title">Catégories populaires</h5>
+                            <canvas id="categoriesChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="recent-orders">
+                            <h5>Commandes récentes</h5>
+                            
+                            {% for commande in commandes_recentes %}
+                            <div class="order-item">
+                                <div class="order-info">
+                                    {% if commande.produits.first.image %}
+                                    <img src="{{ commande.produits.first.image.url }}" alt="{{ commande.produits.first.nom }}">
+                                    {% else %}
+                                    <img src="https://via.placeholder.com/150" alt="Pas d'image">
+                                    {% endif %}
+                                    <div>
+                                        <h6>{{ commande.produits.first.nom|default:"Produit" }}</h6>
+                                        <small>Commande #{{ commande.id }}</small>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="order-status 
+                                        {% if commande.statut == 'terminee' %}status-completed
+                                        {% elif commande.statut == 'en_cours' %}status-processing
+                                        {% else %}status-pending{% endif %}">
+                                        {{ commande.get_statut_display }}
+                                    </span>
+                                    <div class="text-right mt-1">€{{ commande.montant_total|floatformat:2 }}</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted">Aucune commande récente</p>
+                            {% endfor %}
+                            
+                            <div class="text-center mt-3">
+                                <a href="#" class="btn btn-sm btn-outline-primary">Voir toutes les commandes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Produits en rupture de stock</h5>
+                </div>
+                <div class="card-body">
+                    {% if produits_rupture %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Stock</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produit in produits_rupture %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if produit.image %}
+                                            <img src="{{ produit.image.url }}" width="40" height="40" class="rounded me-3" alt="{{ produit.nom }}">
+                                            {% endif %}
+                                            {{ produit.nom }}
+                                        </div>
+                                    </td>
+                                    <td>{{ produit.quantite_en_stock }}</td>
+                                    <td>
+                                        <a href="{% url 'modifier_produit' produit.id %}" class="btn btn-sm btn-warning">Réapprovisionner</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-success">Aucun produit en rupture de stock</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Avis récents</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Voir tous</a>
+                </div>
+                <div class="card-body">
+                    {% for avis in avis_recents %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ avis.client.username }}</strong>
+                            <div class="text-warning">
+                                {% for i in "12345" %}
+                                <i class="fas fa-star{% if forloop.counter > avis.note %}-o{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="mb-1">{{ avis.commentaire|truncatechars:100 }}</p>
+                        <small class="text-muted">Sur {{ avis.produit.nom }} - {{ avis.date_creation|timesince }}</small>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Aucun avis récent</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Notifications récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% for notification in notifications_non_lues %}
+                    <div class="alert alert-info">
+                        <div class="d-flex justify-content-between">
+                            <div>{{ notification.message }}</div>
+                            <small>{{ notification.date_creation|timesince }}</small>
+                        </div>
+                        {% if notification.commande %}
+                        <a href="{% url 'detail_commande' notification.commande.id %}" class="btn btn-sm btn-outline-primary mt-2">
+                            Voir la commande
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Aucune notification non lue</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Charts
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: {{ dates_30j|safe }},
+                datasets: [{
+                    label: 'Ventes quotidiennes',
+                    data: {{ ventes_30j|safe }},    
+                    backgroundColor: 'rgba(255, 140, 0, 0.2)',
+                    borderColor: 'rgba(255, 140, 0, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+        const categoriesChart = new Chart(categoriesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [{% for cat in categories_vendues %}"{{ cat.nom }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    data: [{% for cat in categories_vendues %}{{ cat.total_vendu|default:0 }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: [
+                        '#FF8C00',
+                        '#4285F4',
+                        '#34A853',
+                        '#EA4335',
+                        '#FBBC05'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Écouter les mises à jour via WebSocket ou polling
+        function checkForUpdates() {
+            fetch('/api/sales-stats/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ventes-mois').textContent = 
+                        parseFloat(data.monthly_sales).toFixed(2) + ' FCFA';
+                    
+                    // Animation de mise à jour
+                    gsap.from("#ventes-mois", {
+                        duration: 0.5,
+                        scale: 1.2,
+                        yoyo: true,
+                        ease: "power1.out"
+                    });
+                });
+        }
+
+        // Vérifier toutes les 30 secondes
+        setInterval(checkForUpdates, 30000);
+
+        // Ou utiliser WebSockets pour des mises à jour en temps réel
+        const socket = new WebSocket('ws://votre-domaine.com/ws/sales/');
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if(data.type === 'sales_update') {
+                document.getElementById('ventes-mois').textContent = 
+                    parseFloat(data.amount).toFixed(2) + ' FCFA';
+            }
+        };
+
+
+        // Actualisation automatique toutes les 30 secondes
+        setInterval(function() {
+            fetch('/dashboard/')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.getElementById('ventes-mois').innerHTML;
+                    document.getElementById('ventes-mois').innerHTML = newContent;
+                });
+        }, 30000);
+    </script>
+</body>
+</html>
+{% endblock %}

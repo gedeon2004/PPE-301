@@ -1,0 +1,210 @@
+{% block content %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/uicons/2.0.11/css/uicons-regular-rounded.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css">
+    <title>Produits pour Clients</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color:rgb(212, 212, 211);
+        }
+
+        .navbar-brand img {
+            height: 40px; 
+        }
+
+        .navbar-brand, .nav-link {
+            color: white;
+            font-weight: bold; 
+            transition: color 0.3s; 
+        }
+
+        .navbar-brand:hover, .nav-link:hover {
+            color: #FFD700; /* Couleur au survol */
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background-color: #ff7f00;
+            border-color: #ff7f00;
+        }
+
+        .btn-primary:hover {
+            background-color: #e67500;
+            border-color: #e67500;
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-img-top {
+            object-fit: cover;
+            height: 250px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-text {
+            color: #555;
+        }
+
+        .card-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .logo {
+            width: 100px;
+            margin-right: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .logo:hover {
+            transform: rotate(5deg);
+        }
+
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="height: 150px; width:150px;">  
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'client' %}">Produits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Notifications</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'panier' %}">Panier <span class="badge badge-light">{{ panier_count }}</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Profil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Déconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <form method="GET" action="{% url 'recherche_produits' %}" class="mb-4">  <!-- Point vers la nouvelle vue -->
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" name="q" class="form-control" placeholder="Rechercher par nom" value="{{ request.GET.q }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="categorie" class="form-control">
+                        <option value="">-- Choisir une catégorie --</option>
+                        <option value="Vêtements">Vêtements</option>
+                        <option value="Chaussures">Chaussures</option>
+                        <option value="Accessoires">Accessoires</option>
+                        <option value="Electronique">Electronique</option>
+                        <option value="Maison">Maison</option>
+
+    
+                        {% for categorie in categories %}
+                            <option value="{{ categorie.nom }}">{{ categorie.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary">Recherche</button>
+                </div>
+            </div>
+        </form>
+
+           
+            
+
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for produit in produits %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-light rounded">
+                    <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ produit.nom }}</h5>
+                        <p class="card-text">{{ produit.description|truncatewords:10 }}</p>
+                        <div class="mt-auto">
+                            <p class="card-text"><strong>Catégorie:</strong> {{ produit.categorie }}</p>
+                            <p class="card-text"><strong>Prix:</strong> {{ produit.prix }} FCFA</p>
+                            <p class="card-text"><strong>Stock:</strong> {{ produit.quantite_en_stock }}</p>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'produit_detail_clients' produit_id=produit.id %}" class="btn btn-primary btn-sm">Voir Détails</a>
+                        <a href="{% url 'panier' %}" class="btn btn-success btn-sm">Ajouter au Panier</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Aucun produit publié.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+{% endblock %}

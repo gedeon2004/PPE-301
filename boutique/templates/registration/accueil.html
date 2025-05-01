@@ -1,0 +1,299 @@
+
+{% block content %}
+{% load static %}
+
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Connexion - Boutique Prêt-à-Porter</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
+            @import url(https://fonts.googleapis.com/css2?family=Roboto:wght@300,400,600);
+
+
+
+
+            :root{
+                --bg-color: rgba(250,250,250);
+                --color-white:rgba(250,250,250);
+                --text-color-second: rgba(38,37,37);
+                --first-color:rgba(110,87,224);
+                --first-shadow: rgba(0, 0, 0, 0.1);
+
+                --box-color:#fff;
+                --nav-color:#ffff;
+                --nav-icon:#000;
+                --logo-color:#000;
+
+                --text-color:#444444;
+                --color-white:#242526;
+
+                --icon-color:#242526;
+                --mode-color:#ccc;
+            }
+
+            .nav-logo{
+                position: relative;
+            }
+
+
+            *{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Poppins", sans-serif;
+            }
+
+
+            /* Global styles */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f9;
+            }
+
+            header {
+                padding: 15px;
+                text-align: center;
+            }
+
+            header h1 {
+                color: rgba(238, 123, 16, 0.979);
+                font-size: 2em;
+            }
+
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                background-color: #444;
+            }
+
+            nav ul li {
+                margin: 0 15px;
+            }
+
+            nav ul li a {
+                color: white;
+                text-decoration: none;
+                font-size: 18px;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            h1, h2 {
+                color: #333;
+                margin-bottom: 10px;
+            }
+            *
+            .btn {
+                
+                text-decoration: none;
+                font-size: 15px;
+                padding: 10px 20px;
+                cursor: pointer;
+                border: 2px solid #e9973a;
+                border-radius: 10px;
+                background: #e9973a;
+                color: var(--text-color);
+                font-weight: 500;
+                transition: all 0.5s ease-in-out;
+            }
+
+
+            .btn:hover {
+                transform: translateY(-5px);
+                background: transparent;
+                color: #eb8d22;
+            }
+
+
+            button {
+                padding: 10px;
+                background-color: #cbdace;
+                color: white;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+                border-radius: 150px;
+            }
+
+            button:hover {
+                background-color: #fafafa;
+            }
+
+            section {
+                margin-bottom: 40px;
+            }
+
+            /* Styles spécifiques pour la page de connexion */
+            #connexion {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #efefef;
+            }
+
+            #connexion button {
+                margin: 0 20px;
+                font-size: 20px;
+                padding: 15px 30px;
+            }
+
+            /* Tableau de bord commun */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            table, th, td {
+                border: 1px solid #ccc;
+            }
+
+            th, td {
+                padding: 10px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            /* Styles spécifiques pour le tableau de bord des clients */
+            #produits, #panier, #commandes {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            #produits ul, #panier ul, #commandes ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            #produits li, #panier li, #commandes li {
+                padding: 10
+            }
+
+
+            .logo {
+                width: 100px;
+                margin-right: 20px;
+                transition: transform 0.3s;
+            }
+
+            .logo:hover {
+                transform: rotate(5deg);
+            }
+
+
+            /* Animation pour les éléments */
+            @keyframes slideFromTop {
+                from {
+                    transform: translateY(-100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideFromBottom {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            /* Application des animations */
+            .nav-logo img {
+                animation: slideFromTop 1s ease-out;
+                opacity: 0;
+                animation-fill-mode: forwards;
+            }
+
+            h1 {
+                animation: slideFromTop 1s ease-out;
+                opacity: 0;
+                animation-delay: 0.5s;
+                animation-fill-mode: forwards;
+            }
+
+            #connexion button {
+                animation: slideFromBottom 1s ease-out;
+                opacity: 0;
+                animation-delay: 1s;
+                animation-fill-mode: forwards;
+            }
+
+
+
+
+
+            /* Message de bienvenue */
+            #connexion p {
+                font-size: 18px;
+                color: #333;
+                opacity: 0;
+                animation: fadeIn 1s ease-in-out forwards;
+            }
+
+            /* Effet de clic sur les boutons */
+            #connexion button:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease-in-out;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <nav id="header">
+                <div class="nav-logo">
+                    <p> <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="height: 150px; width:150px;" > 
+                </div>
+            </nav>
+
+
+            <header>
+
+                <div class="title">
+                    <h1>Bienvenue sur BIGSHOP</h1>
+                </div>
+    
+                <div class="featured-name">
+                    <span class="typedText"></span>
+                </div>
+            </header>
+        </div>
+        <main>
+            <section id="connexion">
+                <h2>Que souhaitez-vous faire ?</h2>
+                <a href="{% url 'client' %}"><button userid="client" class="btn hire-btn">Je suis un Acheteur</button></a>
+                <a href="{% url 'dashboard' %}"><button id="vendeur" class="btn">Je suis un Vendeur</button></a>
+            </section>
+        </main>
+        <script src="script.js/index.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.1.0/typed.umd.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollReveal.js/4.0.9/scrollreveal.min.js"></script>
+    </body>
+    </html>
+{% endblock %}

@@ -1,0 +1,7 @@
+<h1>Restaurer le Produit</h1>
+<p>Êtes-vous sûr de vouloir restaurer {{ produit.nom }} ?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Restaurer</button>
+</form>
+<a href="{% url 'corbeille_produits' %}">Annuler</a>

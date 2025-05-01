@@ -1,0 +1,63 @@
+{% extends "boutique/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Affichage de l'image du produit -->
+            <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="img-fluid product-image animate__animated animate__fadeIn animate__delay-1s">
+        </div>
+        <div class="col-md-6">
+            <h2 class="product-title animate__animated animate__fadeIn animate__delay-2s">{{ produit.nom }}</h2>
+            <p><strong>Description :</strong> {{ produit.description }}</p>
+            <p><strong>Prix :</strong> {{ produit.prix }} FCFA</p>
+            <p><strong>Stock :</strong> {{ produit.quantite_en_stock }}</p>
+            <p><strong>Catégorie :</strong> {{ produit.categorie }}</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-4 animate__animated animate__fadeIn animate__delay-3s">Retour au Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Animation d'image */
+    .product-image {
+        border-radius: 8px;
+        transition: transform 0.5s ease;
+    }
+
+    .product-image:hover {
+        transform: scale(1.1);
+    }
+
+    /* Style du titre */
+    .product-title {
+        color: #FF5733;
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    /* Style des paragraphes */
+    p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    /* Style du bouton retour */
+    .btn-secondary {
+        background-color: #FF5733;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #ff4500;
+        transition: background-color 0.3s ease;
+    }
+</style>
+{% endblock %}

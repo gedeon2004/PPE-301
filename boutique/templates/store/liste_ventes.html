@@ -1,0 +1,26 @@
+{% extends 'boutique/base.html' %}
+
+{% block content %}
+    <h1>Liste des ventes</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix total</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vente in ventes %}
+                <tr>
+                    <td>{{ vente.produit.nom }}</td>
+                    <td>{{ vente.quantite }}</td>
+                    <td>{{ vente.prix_total }}</td>
+                    <td>{{ vente.date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
