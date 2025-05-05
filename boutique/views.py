@@ -34,15 +34,16 @@ from django.views import View
 from django.core.cache import cache
 from django.db.models import Sum
 import stripe
+from decouple import config
+import os
 
 
 
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 
 def buy_now(request, product_id):
-    stripe.api_key = 'sk_test_51RDmi8QoYqHOvimMbYF6M8UcNkUp7nJGKHk1YzI1PClBf9WuPcXlKATOVmrjVB0cB2pbLetF1q5LFsaZMezjHJzk00gJ0VQtk7'
+    stripe.api_key = config('STRIPE_SECRET_KEY')
     product = get_object_or_404(Produit, id=product_id)
 
     # Gestion des données initiales (pour pré-remplissage)
