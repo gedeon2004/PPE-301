@@ -33,6 +33,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.cache import cache
 from django.db.models import Sum
+import stripe
 
 
 
@@ -41,43 +42,55 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def buy_now(request, product_id):
-    
     stripe.api_key = 'sk_test_51RDmi8QoYqHOvimMbYF6M8UcNkUp7nJGKHk1YzI1PClBf9WuPcXlKATOVmrjVB0cB2pbLetF1q5LFsaZMezjHJzk00gJ0VQtk7'
-    
     product = get_object_or_404(Produit, id=product_id)
-    
+
+    # Gestion des données initiales (pour pré-remplissage)
+    initial_data = {
+        'nom': request.user.last_name if request.user.is_authenticated else '',
+        'prenom': request.user.first_name if request.user.is_authenticated else '',
+        'email': request.user.email if request.user.is_authenticated else '',
+    }
+
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
-        # Récupérer les données du formulaire
-        nom = request.POST.get('nom')
-        prenom = request.POST.get('prenom')
-        telephone = request.POST.get('telephone')
-        email = request.POST.get('email', request.user.email)
-        
-        # Créer la commande avec toutes les infos
-        order = Order.objects.create(
-            client=request.user,
-            client_nom=nom,
-            client_prenom=prenom,
-            client_telephone=telephone,
-            client_adresse= request.POST.get('adresse'),
-            client_email=email,
-            produit=product,
-            vendeur=product.vendeur,
-            quantite=quantity,
-            total=product.prix * quantity,
-            status='pending'
-        )
-        
-        # Créer la notification
-        Notification.objects.create(
-            user=product.vendeur,
-            message=f"Nouvelle commande pour {product.nom}",
-            order=order
-        )
-        
-        # Paiement Stripe
         try:
+            quantity = int(request.POST.get('quantity', 1))
+            nom = request.POST.get('nom', '').strip()
+            prenom = request.POST.get('prenom', '').strip()
+            telephone = request.POST.get('telephone', '').strip()
+            email = request.POST.get('email', '').strip()
+
+            # Validation minimale des champs
+            if not all([nom, prenom, telephone, email]):
+                messages.error(request, "Veuillez remplir tous les champs obligatoires")
+                return render(request, 'boutique/checkout.html', {
+                    'product': product,
+                    'initial_data': request.POST  # Réafficher les données saisies
+                })
+
+            # Création de la commande
+            order = Order.objects.create(
+                client=request.user if request.user.is_authenticated else None,
+                client_nom=nom,
+                client_prenom=prenom,
+                client_telephone=telephone,
+                client_adresse=request.POST.get('adresse', ''),
+                client_email=email,
+                produit=product,
+                vendeur=product.vendeur,
+                quantite=quantity,
+                total=product.prix * quantity,
+                status='pending'
+            )
+
+            # Notification au vendeur
+            Notification.objects.create(
+                user=product.vendeur,
+                message=f"Nouvelle commande pour {product.nom}",
+                order=order
+            )
+
+            # Paiement Stripe
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
@@ -88,7 +101,7 @@ def buy_now(request, product_id):
                         },
                         'unit_amount': int(product.prix * 100),
                     },
-                    'quantity': 1,
+                    'quantity': quantity,
                 }],
                 mode='payment',
                 success_url=request.build_absolute_uri(f'/order/success/{order.id}/'),
@@ -99,23 +112,24 @@ def buy_now(request, product_id):
                 }
             )
             return redirect(checkout_session.url)
-        except Exception as e:
-            order.delete()  # Annuler la commande en cas d'erreur
+
+        except ValueError:
+            messages.error(request, "Quantité invalide")
+        except stripe.error.StripeError as e:
+            order.delete()
             messages.error(request, f"Erreur de paiement: {str(e)}")
+        except Exception as e:
+            if 'order' in locals():
+                order.delete()
+            messages.error(request, f"Une erreur est survenue: {str(e)}")
             return redirect('product_detail', product_id=product.id)
-    
-    # Pré-remplir avec les infos utilisateur si connecté
-    initial_data = {
-        'nom': request.user.last_name,
-        'prenom': request.user.first_name,
-        'email': request.user.email,
-    }
-    
+
     return render(request, 'boutique/checkout.html', {
         'product': product,
         'initial_data': initial_data
     })
-
+    
+    
 def payment_success(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     order.status = 'processing'
