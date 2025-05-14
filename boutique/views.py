@@ -36,6 +36,26 @@ from django.db.models import Sum
 import stripe
 from decouple import config
 import os
+from .models import UserProfile  
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
+#from .forms import CustomLoginForm, PasswordResetRequestForm, SetNewPasswordForm
+
+from django.shortcuts import redirect
+
+#from boutique.forms import 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from .forms import CustomLoginForm
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login as auth_login, logout as auth_logout
+from .forms import CustomLoginForm
+from django.contrib import messages
+
+
 
 
 
@@ -50,6 +70,7 @@ def buy_now(request, product_id):
     initial_data = {
         'nom': request.user.last_name if request.user.is_authenticated else '',
         'prenom': request.user.first_name if request.user.is_authenticated else '',
+        'telephone': request.user.phone_number if request.user.is_authenticated else '',
         'email': request.user.email if request.user.is_authenticated else '',
     }
 
@@ -233,6 +254,7 @@ def hisprofile(request):
     return render(request, 'registration/hisprofile.html')  
 
 
+
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -244,6 +266,40 @@ def signup(request):
     else:
         form = SignupForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+
+class CustomLoginView(LoginView):
+    form_class = CustomLoginForm
+    template_name = 'login.html'
+
+    def form_valid(self, form):
+        remember_me = form.cleaned_data.get('remember_me')
+        if not remember_me:
+            self.request.session.set_expiry(0)  # Session expire quand le navigateur se ferme
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return redirect('dashboard')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(request.POST, request=request)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            auth_login(request, user)
+            
+            if not form.cleaned_data['remember_me']:
+                request.session.set_expiry(0)  # Session expire à la fermeture du navigateur
+                
+            messages.success(request, f"Bienvenue, {user.username}!")
+            return redirect('dashboard')
+        
+        messages.error(request, "Échec de la connexion. Veuillez vérifier vos identifiants.")
+    else:
+        form = CustomLoginForm(request=request)
+    
+    return render(request, 'registration/login.html', {'form': form})
 
 
 @login_required
@@ -276,6 +332,8 @@ def index(request):
     electronique = Produit.objects.filter(categorie__nom__iexact='Electronique', est_supprime=False)[:9]
     accessoires = Produit.objects.filter(categorie__nom__iexact='Accessoires', est_supprime=False)[:9]
     maison = Produit.objects.filter(categorie__nom__iexact='Maison', est_supprime=False)[:9]
+    sacs_et_maroquinerie = Produit.objects.filter(categorie__nom__iexact='Sacs & Maroquinerie', est_supprime=False)[:9]
+    
 
     context = {
         'produits': produits,
@@ -284,18 +342,66 @@ def index(request):
         'electronique': electronique,
         'accessoires': accessoires,
         'maison': maison,
+        'sacs_et_maroquinerie': sacs_et_maroquinerie,
     }
     return render(request, 'theme1/index.html', context)
 
 
-#def electronic (request):
-    #return render (request, 'theme1/electronic.html')
 
-#def fashion (request):
-    #return render (request, 'theme1/fashion.html')
+def liste_electronique(request):
+    try:
+        # Utilisation de related_name 'produits' défini dans le modèle
+        produits = Categorie.objects.get(nom='Electronique').produits.all()
+        
+        return render(request, 'boutique/electronique.html', {
+            'electronique': produits
+        })
+    except Categorie.DoesNotExist:
+        # Gestion du cas où la catégorie n'existe pas
+        return render(request, 'boutique/electronique.html', {
+            'electronique': []
+        })
 
-#def jewellery (request):
-    #return render (request, 'theme1/jewellery.html' )
+def liste_vetements(request):
+    try:
+        # Utilisation de related_name 'produits' défini dans le modèle
+        produits = Categorie.objects.get(nom='Vêtements').produits.all()
+        
+        return render(request, 'boutique/modes_assessoires.html', {
+            'vetements': produits
+        })
+    except Categorie.DoesNotExist:
+        # Gestion du cas où la catégorie n'existe pas
+        return render(request, 'boutique/modes_assessoires.html', {
+            'vetements': []
+        })
+        
+        
+def liste_chaussures(request):
+    try:
+        # Utilisation de related_name 'produits' défini dans le modèle
+        produits = Categorie.objects.get(nom='Chaussures').produits.all()
+        
+        return render(request, 'boutique/chaussures.html', {
+            'chaussures': produits
+        })
+    except Categorie.DoesNotExist:
+        # Gestion du cas où la catégorie n'existe pas
+        return render(request, 'boutique/chaussures.html', {
+            'chaussures': []
+        })
+        
+        
+def liste_sacs(request):
+    try:
+        produits = Categorie.objects.get(nom='Sacs & Maroquinerie').produits.all()
+        return render(request, 'boutique/sacs_maroquineries.html', {
+            'produits': produits  # Même nom de variable pour tous
+        })
+    except Categorie.DoesNotExist:
+        return render(request, 'boutique/sacs_maroquineries.html', {
+            'produits': []
+        })
 
 
 # Liste des produits du vendeur connecté
@@ -629,7 +735,7 @@ def client_order_view(request, commande_id):
     # Code pour traiter la commande
     return render(request, 'boutique/client_order.html', {'commande_id': commande_id})
 
-from .models import UserProfile  
+
 
 @login_required
 def profile_view(request):

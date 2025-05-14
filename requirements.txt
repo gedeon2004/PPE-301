@@ -1,0 +1,6 @@
+#DEPENDANCES
+pip install python-dotenv
+pip install django-widget-tweaks
+pip install stripe
+pip install python-decouple
+pip install reportlab

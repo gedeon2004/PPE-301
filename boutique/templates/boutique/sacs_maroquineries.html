@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Électroniques Premium | Seweed</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #2a5298;
+            --secondary: #1e3c72;
+            --accent: #00c853;
+            --dark: #212529;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: #f5f7fa;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 3rem 0;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: 2rem;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .product-img-container {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.1);
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-details {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            flex: 1;
+        }
+        
+        .btn-cart {
+            background: white;
+            color: #666;
+            border: 1px solid #ddd;
+            flex: 1;
+        }
+        
+        .btn-buy {
+            background: var(--accent);
+            color: white;
+            border: none;
+            flex: 2;
+            font-weight: 600;
+        }
+        
+        .btn-buy:hover {
+            background: #00b14a;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .product-card {
+            animation: fadeIn 0.6s ease-out forwards;
+            animation-delay: calc(var(--order) * 0.1s);
+            opacity: 0;
+        }
+        
+        /* Floating cart button */
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 200, 83, 0.3);
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-5 fw-bold">Électroniques Premium</h1>
+            <p class="lead">Découvrez des produits high-tech à prix imbattables</p>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <div class="container mb-5">
+        <div class="product-grid">
+            {% for produit in produits %}
+            <div class="product-card" style="--order: {{ forloop.counter }}">
+                {% if produit.nouveau %}
+                <span class="product-badge">Nouveau</span>
+                {% endif %}
+                
+                <div class="product-img-container">
+                    <img src="{{ produit.image.url }}" class="product-img" alt="{{ produit.nom }}">
+                </div>
+                
+                <div class="product-info">
+                    <h3 class="product-title">{{ produit.nom }}</h3>
+                    <p class="product-price">{{ produit.prix }} FCFA</p>
+                    
+                    <div class="product-actions">
+                        <button class="btn btn-details btn-sm">
+                            <i class="bi bi-eye"></i> Voir
+                        </button>
+                        <button class="btn btn-cart btn-sm">
+                            <i class="bi bi-cart"></i>
+                        </button>
+                        <button class="btn btn-buy btn-sm">
+                            <i class="bi bi-lightning"></i> Acheter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Floating Cart -->
+    <a href="#" class="floating-cart">
+        <i class="bi bi-cart-fill" style="font-size: 1.5rem;"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation au survol des images
+        document.querySelectorAll('.product-img-container').forEach(container => {
+            const img = container.querySelector('.product-img');
+            
+            container.addEventListener('mousemove', (e) => {
+                const x = e.clientX - container.getBoundingClientRect().left;
+                const y = e.clientY - container.getBoundingClientRect().top;
+                
+                const centerX = container.offsetWidth / 2;
+                const centerY = container.offsetHeight / 2;
+                
+                const moveX = (x - centerX) / 15;
+                const moveY = (y - centerY) / 15;
+                
+                img.style.transform = `scale(1.1) translate(${moveX}px, ${moveY}px)`;
+            });
+            
+            container.addEventListener('mouseleave', () => {
+                img.style.transform = 'scale(1.1) translate(0, 0)';
+            });
+        });
+    </script>
+</body>
+</html>

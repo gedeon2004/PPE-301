@@ -163,6 +163,7 @@
                     <div class="col-md-4">
                         <h5 style="font-size: 1rem;"><u>VENDEUR</u></h5>
                         <p>Identifiant: {{ order.vendeur.get_full_name|default:order.vendeur.username }}</p>
+                        <p>Téléphone: {{ order.vendeur.telephone }}</p>
                         <p>Email: {{ order.vendeur.email }}</p>
                     </div>
                     <div class="col-md-4 text-end">

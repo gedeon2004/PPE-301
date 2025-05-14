@@ -15,7 +15,8 @@ from .views import components_alerts
 from .views import modifier_produit, supprimer_produit
 from .views import confirmation_suppression 
 from .views import modifier_produit, supprimer_produit, restaurer_produit, supprimer_definitivement, corbeille_produits
-
+from django.urls import path
+#from .views import CustomLoginView, CustomPasswordResetView, CustomPasswordResetConfirmView
 
 urlpatterns = [
     # Routes liées à l'admin
@@ -26,11 +27,9 @@ urlpatterns = [
     
     path ('', views.index, name='index'),
     
-    #path ('fashion/', views.fashion, name = 'fashion'), 
+   
     
-    #path ('electronic/', views.electronic, name = 'electronic'),
     
-    #path ('jewellery/', views.jewellery , name= 'jewellery'),
     
     #path('', views.liste_produits, name='liste_produits'),
     path('ajouter_produit/', views.ajouter_produit, name='ajouter_produit'),
@@ -38,6 +37,11 @@ urlpatterns = [
     path('produits/gestion/', gestion_produits, name='gestion_produits'),
     path('produits/<int:produit_id>/', views.produit_detail, name='produit_detail'),
     path('produit/<int:produit_id>/', produit_detail_clients, name='produit_detail_clients'),
+    path('electronics/', views.liste_electronique, name='liste_electronique'),
+    path('vetements/', views.liste_vetements, name='liste_vetements'),
+    path('chaussures/', views.liste_chaussures, name='liste_chaussures'),
+    path('sacs & maroquineries/', views.liste_sacs, name='liste_sacs'),
+    
     
     
     # Modifier et supprimer produits
@@ -66,9 +70,7 @@ urlpatterns = [
 
     # Authentification
     
-    
-    
-    path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),  # URL de connexion
+    path('accounts/login/', views.login_view, name='login'),
     path('accounts/accueil/', views.accueil, name='accueil'),  # URL de la page d'accueil
     path ('accounts/hisprofile/', views.hisprofile, name='hisprofile'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),  # URL de déconnexion
@@ -84,7 +86,7 @@ urlpatterns = [
     
     path('signup/', views.signup, name='signup'),  # URL pour accéder à la page d'inscription
     
-    path('accounts/profile/', views.profile, name='profile'),  # URL pour accéder à la page de profil
+    
      
      
     path('produit/<int:id>/', views.produit_detail, name='produit_detail'),  # URL pour accéder à la page de détail d'un produit (connexion vendeur)
