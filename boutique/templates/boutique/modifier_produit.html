@@ -1,137 +1,681 @@
-{% extends 'boutique/base.html' %}
-{% load widget_tweaks %}
-
-{% block content %}
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.0/gsap.min.js"></script>
-
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier Produit - Vendeur Pro</title>
+    <!-- Liens CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #FF8C00;
+            --primary-hover: #e67e00;
+            --secondary-color: #FFD700;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --border-color: #e0e0e0;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --transition-speed: 0.3s;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
         }
-
-        .product-form-container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 40px;
-            background-color: white;
-            border-radius: 12px;
-            border: 4px solid #ff7f00;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            animation: zoomIn 1s ease-out forwards;
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #FF8C00, #FF6347);
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all var(--transition-speed) ease;
         }
-
-        @keyframes zoomIn {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        
+        body.sidebar-collapsed .sidebar {
+            width: var(--sidebar-collapsed);
         }
-
-        .form-label {
+        
+        body.sidebar-collapsed .sidebar-brand span,
+        body.sidebar-collapsed .sidebar-nav a span:not(.badge),
+        body.sidebar-collapsed .sidebar-nav .submenu {
+            display: none !important;
+        }
+        
+        body.sidebar-collapsed .sidebar-nav a {
+            justify-content: center;
+            padding: 12px 0;
+        }
+        
+        body.sidebar-collapsed .sidebar-nav a i {
+            margin-right: 0;
+        }
+        
+        body.sidebar-collapsed .main-content {
+            margin-left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
+        }
+        
+        .sidebar-brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .sidebar-brand img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            object-fit: cover;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+        
+        .sidebar-nav li {
+            margin: 5px 0;
+            position: relative;
+        }
+        
+        .sidebar-nav a {
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-radius: 5px;
+            margin: 0 10px;
+            transition: all var(--transition-speed) ease;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .sidebar-nav a i {
+            margin-right: 10px;
+            font-size: 18px;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .sidebar-nav a:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-nav .active {
+            background-color: rgba(255,255,255,0.3);
             font-weight: bold;
         }
-
-        .form-control {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 2px solid #ff7f00;
+        
+        .sidebar-nav .active:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: white;
+            border-radius: 0 5px 5px 0;
         }
-
-        .btn-submit {
-            background-color: #ff7f00;
-            color: white;
-            font-size: 16px;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            width: 100%;
+        
+        /* Submenu */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            padding-left: 20px;
+            transition: max-height var(--transition-speed) ease;
+        }
+        
+        .submenu.show {
+            max-height: 500px;
+        }
+        
+        .submenu a {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            margin: 0 0 0 10px;
+        }
+        
+        .submenu a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .has-submenu > a:after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-left: auto;
+            transition: transform var(--transition-speed) ease;
+        }
+        
+        .has-submenu.active > a:after {
+            transform: rotate(180deg);
+        }
+        
+        /* Toggle Button */
+        .sidebar-toggle {
+            position: fixed;
+            left: calc(var(--sidebar-width) - 20px);
+            top: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            z-index: 1100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all var(--transition-speed) ease;
+        }
+        
+        body.sidebar-collapsed .sidebar-toggle {
+            left: calc(var(--sidebar-collapsed) - 15px);
+        }
+        
+        .sidebar-toggle i {
+            transition: transform var(--transition-speed) ease;
+        }
+        
+        body.sidebar-collapsed .sidebar-toggle i {
+            transform: rotate(180deg);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+            transition: all var(--transition-speed) ease;
+        }
+        
+        /* Minimalist Form Style */
+        .minimalist-form {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.8s ease-in-out;
         }
 
-        .btn-submit:hover {
-            background-color: #e67500;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .error-message {
-            color: red;
-            font-size: 14px;
+        .minimalist-form .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .minimalist-form .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .minimalist-form .form-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .minimalist-form .form-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .minimalist-form .form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .minimalist-form .form-control {
+            width: 100%;
+            padding: 0.5rem 0;
+            font-size: 1rem;
+            border: none;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .minimalist-form .form-control:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .minimalist-form textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 4px;
+        }
+
+        /* Boutons */
+        .minimalist-form .btn-submit {
+            padding: 8px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            float: right;
+        }
+
+        .minimalist-form .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .minimalist-form .btn-cancel {
+            padding: 8px 20px;
+            background: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .minimalist-form .btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .minimalist-form .error-message {
+            color: #EF476F;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        /* File Upload */
+        .minimalist-form .custom-file-upload {
+            display: block;
+            padding: 1rem;
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .minimalist-form .custom-file-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        .minimalist-form .file-input {
+            display: none;
+        }
+
+        .minimalist-form .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 1rem;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        /* Current Image */
+        .current-image {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .current-image img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .current-image p {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .sidebar-toggle {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block !important;
+            }
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1050;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
     </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="container py-5">
-        <h2 class="text-center mb-4">Modifier le Produit</h2>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            
+            <div class="sidebar-brand">
+                <img src="https://via.placeholder.com/150" alt="Logo">
+                <span class="d-none d-lg-block">Vendeur Pro</span>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="{% url 'dashboard' %}" data-bs-toggle="tooltip" data-bs-placement="right" title="Tableau de Bord">
+                        <i class="uil uil-dashboard"></i> <span>Tableau de Bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Boutique">
+                        <i class="uil uil-shopping-bag"></i> <span>Boutique</span>
+                    </a>
+                </li>
+                <li class="has-submenu active">
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Produits">
+                        <i class="uil uil-box"></i> <span>Produits</span>
+                    </a>
+                    <ul class="submenu show">
+                        <li><a href="{% url 'gestion_produits' %}"><i class="uil uil-plus-circle"></i> <span>Ajouter Produit</span></a></li>
+                        <li><a href="#"><i class="uil uil-list-ul"></i> <span>Liste des Produits</span></a></li>
+                        <li><a href="{% url 'corbeille_produits' %}"><i class="uil uil-trash-alt"></i> <span>Corbeille</span></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Commandes">
+                        <i class="uil uil-shopping-cart"></i> <span>Commandes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Livraisons">
+                        <i class="uil uil-truck"></i> <span>Livraisons</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Paiements">
+                        <i class="uil uil-bill"></i> <span>Paiements</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Notifications">
+                        <i class="uil uil-bell"></i> <span>Notifications</span>
+                        {% if notifications_non_lues.count > 0 %}
+                        <span class="badge bg-danger float-end">{{ notifications_non_lues.count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Statistiques">
+                        <i class="uil uil-chart-line"></i> <span>Statistiques</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Avis Clients">
+                        <i class="uil uil-comment-alt"></i> <span>Avis Clients</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'hisprofile' %}" data-bs-toggle="tooltip" data-bs-placement="right" title="Profil">
+                        <i class="uil uil-user"></i> <span>Profil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'login' %}" id="logout-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Déconnexion">
+                        <i class="uil uil-sign-out-alt"></i> <span>Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow-sm">
-                    <div class="card-body product-form-container">
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            
-                            <div class="mb-3">
-                                <label for="id_nom" class="form-label">Nom du Produit</label>
-                                {{ form.nom|add_class:"form-control" }}
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="id_prix" class="form-label">Prix (FCFA)</label>
-                                {{ form.prix|add_class:"form-control" }}
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="id_quantite_en_stock" class="form-label">Stock</label>
-                                {{ form.quantite_en_stock|add_class:"form-control" }}
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="id_image" class="form-label">Image actuelle</label>
-                                {% if produit.image %}
-                                    <div class="mb-2">
-                                        <img src="{{ produit.image.url }}" alt="Image actuelle" class="img-fluid" style="max-width: 200px; border-radius: 8px;">
-                                    </div>
-                                {% endif %}
-                                <label for="id_image" class="form-label">Changer l'image</label>
-                                {{ form.image|add_class:"form-control" }}
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="id_categorie" class="form-label">Catégorie</label>
-                                {{ form.categorie|add_class:"form-control" }}
-                            </div>
-
-                            <button type="submit" class="btn-submit">Mettre à Jour</button>
-
-                            {% if form.errors %}
-                                <div class="error-message mt-3">
-                                    <ul>
-                                        {% for field, errors in form.errors.items %}
-                                            {% for error in errors %}
-                                                <li>{{ error }}</li>
-                                            {% endfor %}
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                        </form>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container py-5">
+                <div class="minimalist-form">
+                    <div class="form-header">
+                        <h1 class="form-title">Modifier Produit</h1>
                     </div>
+                    
+                    <form method="post" enctype="multipart/form-data" id="productForm" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Product Name -->
+                        <div class="form-group">
+                            <label class="form-label">Nom du Produit</label>
+                            {{ form.nom|add_class:"form-control"|attr:"placeholder:Entrez le nom du produit" }}
+                            <div class="error-message" id="nom-error">
+                                Veuillez entrer un nom valide pour le produit.
+                            </div>
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="form-group">
+                            <label class="form-label">Prix</label>
+                            <div class="input-group">
+                                {{ form.prix|add_class:"form-control"|attr:"placeholder:Entrez le prix" }}
+                                <span class="input-group-text">FCFA</span>
+                            </div>
+                            <div class="error-message" id="prix-error">
+                                Le prix doit être un nombre positif.
+                            </div>
+                        </div>
+                        
+                        <!-- Stock -->
+                        <div class="form-group">
+                            <label class="form-label">Quantité en Stock</label>
+                            {{ form.quantite_en_stock|add_class:"form-control"|attr:"placeholder:Entrez la quantité disponible" }}
+                            <div class="error-message" id="stock-error">
+                                La quantité doit être un nombre positif.
+                            </div>
+                        </div>
+                        
+                        <!-- Category -->
+                        <div class="form-group">
+                            <label class="form-label">Catégorie</label>
+                            {{ form.categorie|add_class:"form-control" }}
+                            <div class="error-message" id="categorie-error">
+                                Veuillez sélectionner une catégorie.
+                            </div>
+                        </div>
+                        
+                        <!-- Current Image -->
+                        <div class="form-group">
+                            <label class="form-label">Image Actuelle</label>
+                            <div class="current-image">
+                                {% if produit.image %}
+                                    <img src="{{ produit.image.url }}" alt="Image actuelle du produit">
+                                    <p>Image actuelle</p>
+                                {% else %}
+                                    <p>Aucune image disponible</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- New Image Upload -->
+                        <div class="form-group">
+                            <label class="form-label">Nouvelle Image (laisser vide pour conserver l'actuelle)</label>
+                            <label for="id_image" class="custom-file-upload">
+                                <i class="fas fa-cloud-upload-alt me-2"></i>
+                                <span id="fileInfo">Cliquez pour télécharger une nouvelle image</span>
+                            </label>
+                            {{ form.image|add_class:"file-input" }}
+                            <img id="imagePreview" class="image-preview" alt="Aperçu de la nouvelle image">
+                            <div class="error-message" id="image-error">
+                                Veuillez sélectionner une image valide.
+                            </div>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label class="form-label">Description du Produit</label>
+                            {{ form.description|add_class:"form-control"|attr:"placeholder:Décrivez votre produit en détail..." }}
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="form-group" style="border-bottom: none;">
+                            <button type="button" class="btn-cancel" onclick="window.history.back()">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn-submit">
+                                Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        gsap.from(".product-form-container", { opacity: 0, y: -50, duration: 1.5, ease: "power4.out" });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion du sidebar
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        
+        // Toggle sidebar sur desktop
+        sidebarToggle.addEventListener('click', function() {
+            document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+        });
+        
+        // Toggle sidebar sur mobile
+        mobileMenuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+        });
+        
+        // Restaurer l'état du sidebar
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+        }
+        
+        // Gestion des sous-menus
+        document.querySelectorAll('.has-submenu > a').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const submenu = this.parentElement.querySelector('.submenu');
+                const parent = this.parentElement;
+                
+                if (submenu.classList.contains('show')) {
+                    submenu.classList.remove('show');
+                    parent.classList.remove('active');
+                } else {
+                    // Fermer les autres sous-menus ouverts
+                    document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
+                        if (openSubmenu !== submenu) {
+                            openSubmenu.classList.remove('show');
+                            openSubmenu.parentElement.classList.remove('active');
+                        }
+                    });
+                    
+                    submenu.classList.add('show');
+                    parent.classList.add('active');
+                }
+            });
+        });
+        
+        // Initialisation des tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Aperçu de l'image uploadée
+        const imageInput = document.getElementById('id_image');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    document.getElementById('image-error').style.display = 'none';
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+                fileInfo.textContent = this.files[0].name;
+            }
+        });
+    });
     </script>
-
-{% endblock %}
+</body>
+</html>

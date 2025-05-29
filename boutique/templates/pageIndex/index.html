@@ -1,0 +1,1584 @@
+{% load static %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIGSHOP - Votre marketplace africaine</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    <!-- Exemple Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/fontawesome.min.css">
+    
+
+    
+    <style>
+        :root {
+            --primary-color: #FF6B00;
+            --secondary-color: #003366;
+            --accent-color: #FFD700;
+            --dark-color: #1A1A1A;
+            --light-color: #F8F9FA;
+            --gray-color: #6C757D;
+            --success-color: #28A745;
+            --danger-color: #DC3545;
+            --border-radius: 8px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-color);
+            background-color: #FFFFFF;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand img {
+            height: 40px;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark-color);
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .btn-primary:hover {
+            background-color: #E05D00;
+            border-color: #E05D00;
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% static "images/hero-bg.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 50px;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            position: relative;
+            color: var(--secondary-color);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+        }
+        
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .products-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            scrollbar-width: none;
+        }
+
+        .products-carousel::-webkit-scrollbar {
+            display: none; /* Masquer la scrollbar pour Chrome/Safari */
+        }
+
+        .product-item {
+            flex: 0 0 calc(25% - 1.5rem);
+            scroll-snap-align: start;
+        }
+
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+        
+        .carousel-control:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .prev {
+            left: -20px;
+        }
+        
+        .next {
+            right: -20px;
+        }
+        
+        @media (max-width: 992px) {
+            .product-item {
+                flex: 0 0 calc(33.33% - 1.5rem);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .product-item {
+                flex: 0 0 calc(50% - 1.5rem);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .product-item {
+                flex: 0 0 calc(100% - 1.5rem);
+            }
+            
+            .carousel-control {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .prev {
+                left: -10px;
+            }
+            
+            .next {
+                right: -10px;
+            }
+        }
+        .product-img {
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .product-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .product-old-price {
+            text-decoration: line-through;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .badge-discount {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--danger-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+        }
+        
+        .category-card {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-img {
+            height: 150px;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+        
+        .category-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            color: white;
+            font-weight: 600;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        }
+        
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            border-radius: 50px 0 0 50px;
+            border: 2px solid var(--primary-color);
+            padding: 12px 20px;
+        }
+        
+        .search-btn {
+            border-radius: 0 50px 50px 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 20px;
+        }
+        
+        .dropdown-categories {
+            border-radius: 50px 0 0 50px;
+            border-right: none;
+            border-color: #ddd;
+        }
+        
+        .feature-box {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-title {
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .footer-link {
+            color: #CCCCCC;
+            display: block;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            color: white;
+            text-decoration: none;
+            padding-left: 5px;
+        }
+        
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: var(--transition);
+        }
+        
+        .social-icon:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .newsletter-input {
+            border-radius: 50px 0 0 50px;
+            border: none;
+            padding: 12px 20px;
+        }
+        
+        .newsletter-btn {
+            border-radius: 0 50px 50px 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 20px;
+        }
+        
+        .copyright {
+            background-color: #001a33;
+            color: #AAAAAA;
+            padding: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+
+
+
+        .carousel-item .d-flex {
+            position: relative; 
+        }
+        
+        .carousel-item h1, .carousel-item p, .carousel-item div {
+            position: relative; /* Positionnement relatif pour empécher le positionnement absolute de sortir du container */
+            transform: translateY(50px); /* Ajustez la valeur pour déplacer vers le bas */
+        }
+        .carousel-item h1, .carousel-item p, .carousel-item div {
+            margin-top: 30px; /* Ajustez la valeur pour déplacer vers le bas */
+        }
+        .carousel-item .d-flex {
+            align-items: flex-end; /* Aligne les éléments en bas */
+            justify-content: center; /* Centre horizontalement */
+        }
+
+
+        .electronic-showcase {
+            padding: 3rem 0;
+            background: linear-gradient(to bottom, #f9fafb 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
+          }
+          
+          .showcase-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+          }
+          
+          /* Header Styles */
+          .showcase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+          }
+          
+          .showcase-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1f2937;
+            position: relative;
+            display: inline-block;
+          }
+          
+          .showcase-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #3b82f6, #10b981);
+          }
+          
+          .showcase-view-all {
+            display: inline-flex;
+            align-items: center;
+            color: #3b82f6;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+          }
+          
+          .showcase-view-all:hover {
+            color: #2563eb;
+            transform: translateX(5px);
+          }
+          
+          /* Carousel Container */
+          .showcase-carousel-container {
+            position: relative;
+            padding: 0 40px;
+          }
+          
+          /* Track/Slides */
+          .showcase-track {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
+            scrollbar-width: none;
+          }
+          
+          .showcase-track::-webkit-scrollbar {
+            display: none;
+          }
+          
+          .showcase-slide {
+            scroll-snap-align: start;
+            flex: 0 0 auto;
+            width: 280px;
+          }
+          
+          /* Product Card */
+          .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            height: 100%;
+            position: relative;
+          }
+          
+          .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+          }
+          
+          .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 2;
+          }
+          
+          .discount-tag {
+            background: #ef4444;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.2);
+          }
+          
+          .new-tag {
+            background: rgb(13, 156, 61);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(16, 185, 129, 0.2);
+          }
+          
+          .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            padding: 20px;
+            background: #f8fafc;
+            transition: transform 0.4s ease;
+          }
+          
+          .product-card:hover .product-image {
+            transform: scale(1.05);
+          }
+          
+          .product-details {
+            padding: 20px;
+          }
+          
+          .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+            height: 3em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
+          
+          .price-box {
+            margin: 1.2rem 0;
+          }
+          
+          .current-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: black;
+          }
+          
+          .old-price {
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-decoration: line-through;
+            margin-left: 0.5rem;
+          }
+          
+          .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+          }
+          
+          .quick-view,
+          .add-cart {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+          }
+          
+          .quick-view {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+          }
+          
+          .quick-view:hover {
+            background: #e5e7eb;
+          }
+          
+          .add-cart {   
+            background:rgb(13, 156, 61);
+            color: white;
+            border: 1px solid rgb(3, 206, 64);
+          }
+          
+          .add-cart:hover {
+            background:rgb(3, 206, 64);
+          }
+          
+          .buy-now-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to right,rgb(241, 106, 43),rgb(233, 118, 24));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+          }
+          
+          .buy-now-btn:hover {
+            background: linear-gradient(to right,rgb(235, 156, 37),rgb(229, 173, 70));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+          }
+          
+          /* Navigation Arrows */
+          .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+          }
+          
+          .nav-arrow:hover {
+            background: #000;
+            transform: translateY(-50%) scale(1.1);
+            opacity: 1;
+          }
+          
+          .prev-arrow {
+            left: -10px;
+          }
+          
+          .next-arrow {
+            right: -10px;
+          }
+          
+          .arrow-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            padding: 3px;
+          }
+          
+          .prev-arrow .arrow-icon {
+            transform: rotate(135deg);
+            margin-right: 3px;
+          }
+          
+          .next-arrow .arrow-icon {
+            transform: rotate(-45deg);
+            margin-left: 3px;
+          }
+          
+          /* Responsive Design */
+          @media (max-width: 1024px) {
+            .showcase-slide {
+              width: 250px;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .showcase-carousel-container {
+              padding: 0 10px;
+            }
+            
+            .nav-arrow {
+              width: 40px;
+              height: 40px;
+            }
+            
+            .prev-arrow {
+              left: 0;
+            }
+            
+            .next-arrow {
+              right: 0;
+            }
+            
+            .showcase-title {
+              font-size: 1.8rem;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            .showcase-header {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 15px;
+            }
+            
+            .showcase-slide {
+              width: 220px;
+            }
+        }
+        
+
+        .eye-icon::before {
+            content: "\f06e"; /* Exemple Font Awesome : l'œil */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+        
+        .cart-icon::before {
+            content: "\f07a"; /* Exemple Font Awesome : le panier */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+
+        .showcase-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .showcase-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #feb47b, #ff7e5f);
+        }
+        
+        
+        
+        .showcase-button:hover i {
+            transform: translateX(4px);
+        }
+
+
+        .product-date {
+            display: block;
+            color: #666;
+            font-size: 0.8rem;
+            margin: 5px 0 10px;
+            font-style: italic;
+        }
+
+        .product-date:hover {
+            color: var(--primary); /* Utilisez votre couleur principale */
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="bg-dark py-2 text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small><i class="fas fa-headset me-2"></i> Support client : +225 07 07 07 07 07</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>
+                        <a href="#" class="text-white me-3"><i class="fas fa-truck me-1"></i> Suivi de commande</a>
+                        <a href="#" class="text-white me-3"><i class="fas fa-question-circle me-1"></i> Aide</a>
+                        <a href="#" class="text-white"><i class="fas fa-globe-africa me-1"></i> Français</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'images/logo.png' %}" alt="BIGSHOP" class="img-fluid">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <!-- Search Bar -->
+                <div class="search-box mx-lg-4 my-3 my-lg-0 flex-grow-1">
+                    <div class="input-group">
+                        <!-- Filtre de catégories -->
+                        <select class="form-select dropdown-categories" id="categorySelect" style="max-width: 150px;">
+                            <option value="all">Toutes catégories</option>
+                            {% for categorie in categories %}
+                                <option value="{{ categorie.nom|lower }}">{{ categorie.nom }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- Champ de recherche -->
+                        <input type="text" class="form-control search-input" id="searchInput" placeholder="Rechercher des produits...">
+
+                        <!-- Bouton de recherche -->
+                        <button class="btn search-btn" id="searchButton" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                
+                <!-- Navigation Links -->
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarCategories" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bars me-1"></i> Catégories
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for categorie in categories %}
+                                <li><a class="dropdown-item" href="#">{{ categorie.nom }}</a></li>
+                                {% if forloop.counter == 6 %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-primary" href="#">Voir toutes les catégories</a></li>
+                                    
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-store me-1"></i> Vendre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-heart me-1"></i> Favoris</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarAccount" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> Compte
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-in-alt me-2"></i> Connexion</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user-plus me-2"></i> Inscription</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i> Commandes</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Paramètres</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="#">
+                            <i class="fas fa-shopping-cart me-1"></i> Panier
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                0
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section py-5" style="background:rgb(255, 255, 255);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-12">
+                    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                        <div class="carousel-inner">
+
+                            <!-- Slide 1 -->
+                            <div class="carousel-item active text-center text-white" style="background: url('{% static 'images/product-2.jpg' %}') center center / cover no-repeat; min-height: 600px; position: relative;">
+                              <!--   <div class="overlay" style="background: rgba(0, 0, 0, 0.4); position: absolute; top:0; left:0; right:0; bottom:0;"></div>-->
+                                <div class="d-flex justify-content-center align-items-center flex-column h-100 position-relative">
+                                    <p class="text-uppercase mb-2 small">Nouvelle Collection Été !</p>
+                                    <h1 class="fw-bold display-1 text-warning">Jusqu'à 50%</h1>
+                                    <p class="h3 fw-bold text-light mb-4">Profitez-en maintenant !</p>
+                                    <div>
+                                        <a href="#" class="btn btn-light btn-lg me-2">Découvrir</a>
+                                        <a href="#" class="btn btn-warning btn-lg">Acheter</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 2 -->
+                            <div class="carousel-item text-center text-white" style="background: url('{% static 'images/product-1.jpg' %}') center center / cover no-repeat; min-height: 650px; position: relative;">
+                               <!--  <div class="overlay" style="background: rgba(0, 0, 0, 0.5); position: absolute; top:0; left:0; right:0; bottom:0;"></div>-->
+                                <div class="d-flex justify-content-center align-items-center flex-column h-100 position-relative">
+                                    <p class="text-uppercase mb-2 small">Dernières Tendances !</p>
+                                    <h1 class="fw-bold display-1 text-danger">Soldes d'été</h1>
+                                    <p class="h3 fw-bold text-light mb-4">Offre Limitée !</p>
+                                    <div>
+                                        <a href="#" class="btn btn-light btn-lg me-2">Découvrir</a>
+                                        <a href="#" class="btn btn-danger btn-lg">Acheter</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 3 -->
+                            <div class="carousel-item text-center text-white" style="background: url('{% static 'images/product-5.jpg' %}') center center / cover no-repeat; min-height: 650px; position: relative;">
+                                <!-- <div class="overlay" style="background: rgba(0, 0, 0, 0.5); position: absolute; top:0; left:0; right:0; bottom:0;"></div> -->
+                                <div class="d-flex justify-content-center align-items-center flex-column h-100 position-relative">
+                                    <p class="text-uppercase mb-2 small">Incontournables de l'été !</p>
+                                    <h1 class="fw-bold display-1 text-danger">Promotions</h1>
+                                    <p class="h3 fw-bold text-light mb-4">Ne manquez pas ça !</p>
+                                    <div>
+                                        <a href="#" class="btn btn-light btn-lg me-2">Découvrir</a>
+                                        <a href="#" class="btn btn-danger btn-lg">Acheter</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    
+    
+    <!-- Features Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h5 class="feature-title">Livraison Rapide</h5>
+                        <p class="mb-0">Livraison en 24h à Abidjan, 72h en région</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5 class="feature-title">Paiement Sécurisé</h5>
+                        <p class="mb-0">Paiement mobile, carte bancaire ou cash</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <h5 class="feature-title">Retour Facile</h5>
+                        <p class="mb-0">7 jours pour changer d'avis</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h5 class="feature-title">Support 24/7</h5>
+                        <p class="mb-0">Assistance client toujours disponible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+  
+    
+    <!-- Featured Products -->
+    <section id="featured-products" class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title fade-in">Produits Populaires</h2>
+                <a href="#" class="btn btn-sm btn-outline-primary">Voir plus <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+            
+            <div class="owl-carousel owl-theme">
+                {% for produit in produits|slice:":10" %}
+                <div class="item">
+                    <div class="product-card">
+                        {% if produit.promotion %}
+                        <span class="badge-discount">-{{ produit.promotion }}%</span>
+                        {% endif %}
+                        <img src="{{ produit.image.url }}" class="card-img-top product-img" alt="{{ produit.nom }}">
+                        <div class="card-body">
+                            <h5 class="product-title">{{ produit.nom|truncatechars:30 }}</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="product-price">{{ produit.prix }} FCFA</span>
+                                {% if produit.ancien_prix %}
+                                <small class="product-old-price">{{ produit.ancien_prix }} FCFA</small>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'produit_detail_clients' produit.id %}" class="btn btn-sm btn-outline-primary">Détails</a>
+                                <a href="{% url 'buy_now' produit.id %}" class="btn btn-sm btn-primary">Acheter</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    
+    <!-- Flash Sale -->
+    <section class="py-5 bg-danger text-white">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="section-title text-white fade-in">Promotions Flash</h2>
+                    <p class="mb-0">Offres spéciales se terminant bientôt</p>
+                </div>
+                <div class="text-end">
+                    <h4 class="mb-1"><i class="fas fa-clock me-2"></i> Fin dans: 12:45:23</h4>
+                    <a href="#" class="btn btn-outline-light btn-sm">Voir toutes les promos</a>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for produit in produits|slice:":4" %}
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-card bg-white text-dark">
+                        <span class="badge-discount">-30%</span>
+                        <img src="{{ produit.image.url }}" class="card-img-top product-img" alt="{{ produit.nom }}">
+                        <div class="card-body">
+                            <h5 class="product-title">{{ produit.nom|truncatechars:30 }}</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="product-price">{{ produit.prix }} FCFA</span>
+                                <small class="product-old-price">{{ produit.prix|add:5000 }} FCFA</small>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ forloop.counter|add:2 }}0%;" aria-valuenow="{{ forloop.counter|add:2 }}0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="text-muted">{% widthratio forloop.counter|add:2 1 10 %} vendus sur 100</small>
+                            <div class="d-grid mt-3">
+                                <a href="{% url 'buy_now' produit.id %}" class="btn btn-danger">Acheter maintenant</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    
+        <!-- Electronics Section -->
+        <section class="electronic-showcase">
+            <div class="showcase-container">
+            <div class="showcase-header">
+                <h2 class="showcase-title">Électroniques Premium</h2>
+                <a href="{% url 'liste_electronique' %}" class="showcase-button">
+                    Voir toute la collection
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                
+            </div>
+        
+            <div class="showcase-carousel-container">
+                <div class="showcase-track">
+                {% for product in electronique %}
+                <div class="showcase-slide">
+                    <div class="product-card">
+                    <div class="product-badge">
+                        {% if product.promotion %}
+                        <span class="discount-tag">-{{ product.promotion }}%</span>
+                        {% endif %}
+                        <span class="new-tag">Nouveau</span>
+                    </div>
+                    
+                    <img src="{{ product.image.url }}" alt="{{ product.nom }}" class="product-image">
+                    
+                    <div class="product-details">
+                        <h3 class="product-name">{{ product.nom }}</h3>
+
+                        <!-- Ajout de la date de création -->
+                        <small class="product-date" title="{{ product.date_creation|date:'d/m/Y H:i' }}">
+                            Publié il y a {{ product.date_creation|timesince }}
+                        </small>
+                        
+                        <div class="price-box">
+                        <span class="current-price">{{ product.prix }} FCFA</span>
+                        {% if product.ancien_prix %}
+                        <span class="old-price">{{ product.ancien_prix }} FCFA</span>
+                        {% endif %}
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="{{ product.id }}" data-url="{% url 'produit_detail_clients' product.id %}">
+                                <i class="eye-icon"></i> Voir
+                            </button>
+                            <button class="add-cart" data-product-id="{{ product.id }}">
+                                <i class="cart-icon"></i> Panier
+                            </button>
+                        </div>
+                        
+                        <a href="{% url 'buy_now' product.id %}" class="buy-now-btn"><i class="fas fa-bolt"></i> Acheter maintenant</a>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+                
+                <button class="nav-arrow prev-arrow" aria-label="Précédent">
+                <i class="arrow-icon"></i>
+                </button>
+                <button class="nav-arrow next-arrow" aria-label="Suivant">
+                <i class="arrow-icon"></i>
+                </button>
+            </div>
+            </div>
+        </section>
+        
+        
+        <!-- Fashion Section -->
+        <section class="electronic-showcase">
+            <div class="showcase-container">
+            <div class="showcase-header">
+                <h2 class="showcase-title">Assessoires & Modes</h2>
+                <a href="{% url 'liste_vetements' %}" class="showcase-button">
+                    Voir toute la collection
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        
+            <div class="showcase-carousel-container">
+                <div class="showcase-track">
+                {% for product in vetements %}
+                <div class="showcase-slide">
+                    <div class="product-card">
+                    <div class="product-badge">
+                        {% if product.promotion %}
+                        <span class="discount-tag">-{{ product.promotion }}%</span>
+                        {% endif %}
+                        <span class="new-tag">Nouveau</span>
+                    </div>
+                    
+                    <img src="{{ product.image.url }}" alt="{{ product.nom }}" class="product-image">
+                    
+                    <div class="product-details">
+                        <h3 class="product-name">{{ product.nom }}</h3>
+
+                        <!-- Ajout de la date de création -->
+                        <small class="product-date" title="{{ product.date_creation|date:'d/m/Y H:i' }}">
+                            Publié il y a {{ product.date_creation|timesince }}
+                        </small>
+                        
+                        <div class="price-box">
+                        <span class="current-price">{{ product.prix }} FCFA</span>
+                        {% if product.ancien_prix %}
+                        <span class="old-price">{{ product.ancien_prix }} FCFA</span>
+                        {% endif %}
+                        </div>
+                        
+                        <div class="product-actions">
+                            <button class="quick-view" data-product-id="{{ product.id }}" data-url="{% url 'produit_detail_clients' product.id %}">
+                                <i class="eye-icon"></i> Voir
+                            </button>
+                            <button class="add-cart" data-product-id="{{ product.id }}">
+                                <i class="cart-icon"></i> Panier
+                            </button>
+                        </div>
+                        
+                        <a href="{% url 'buy_now' product.id %}" class="buy-now-btn"><i class="fas fa-bolt"></i> Acheter maintenant</a>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+                
+                <button class="nav-arrow prev-arrow" aria-label="Précédent">
+                    <i class="arrow-icon"></i>
+                </button>
+                <button class="nav-arrow next-arrow" aria-label="Suivant">
+                    <i class="arrow-icon"></i>
+                </button>
+            </div>
+            </div>
+        </section>
+
+    <!-- Shoes Section -->
+    <section class="electronic-showcase">
+        <div class="showcase-container">
+          <div class="showcase-header">
+            <h2 class="showcase-title">Shoes</h2>
+            <a href="{% url 'liste_chaussures' %}" class="showcase-button">
+                Voir toute la collection
+                <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+      
+          <div class="showcase-carousel-container">
+            <div class="showcase-track">
+              {% for product in chaussures %}
+              <div class="showcase-slide">
+                <div class="product-card">
+                  <div class="product-badge">
+                    {% if product.promotion %}
+                    <span class="discount-tag">-{{ product.promotion }}%</span>
+                    {% endif %}
+                    <span class="new-tag">Nouveau</span>
+                  </div>
+                  
+                  <img src="{{ product.image.url }}" alt="{{ product.nom }}" class="product-image">
+                  
+                  <div class="product-details">
+                    <h3 class="product-name">{{ product.nom }}</h3>
+
+                    <!-- Ajout de la date de création -->
+                        <small class="product-date" title="{{ product.date_creation|date:'d/m/Y H:i' }}">
+                            Publié il y a {{ product.date_creation|timesince }}
+                        </small>
+                    
+                    <div class="price-box">
+                      <span class="current-price">{{ product.prix }} FCFA</span>
+                      {% if product.ancien_prix %}
+                      <span class="old-price">{{ product.ancien_prix }} FCFA</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="{{ product.id }}" data-url="{% url 'produit_detail_clients' product.id %}">
+                            <i class="eye-icon"></i> Voir
+                        </button>
+                        <button class="add-cart" data-product-id="{{ product.id }}">
+                            <i class="cart-icon"></i> Panier
+                        </button>
+                    </div>
+                    
+                    <a href="{% url 'buy_now' product.id %}" class="buy-now-btn"><i class="fas fa-bolt"></i> Acheter maintenant</a>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            
+            <button class="nav-arrow prev-arrow" aria-label="Précédent">
+              <i class="arrow-icon"></i>
+            </button>
+            <button class="nav-arrow next-arrow" aria-label="Suivant">
+              <i class="arrow-icon"></i>
+            </button>
+          </div>
+        </div>
+    </section>
+
+    <!-- Bags Section -->
+    <section class="electronic-showcase">
+        <div class="showcase-container">
+          <div class="showcase-header">
+            <h2 class="showcase-title">Sacs & Maroquinerie</h2>
+            <a href="{% url 'liste_sacs'%}" class="showcase-button">
+                Voir toute la collection
+                <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+      
+          <div class="showcase-carousel-container">
+            <div class="showcase-track">
+              {% for product in sacs_et_maroquinerie %}
+              <div class="showcase-slide">
+                <div class="product-card">
+                  <div class="product-badge">
+                    {% if product.promotion %}
+                    <span class="discount-tag">-{{ product.promotion }}%</span>
+                    {% endif %}
+                    <span class="new-tag">Nouveau</span>
+                  </div>
+                  
+                  <img src="{{ product.image.url }}" alt="{{ product.nom }}" class="product-image">
+                  
+                  <div class="product-details">
+                    <h3 class="product-name">{{ product.nom }}</h3>
+
+                    <!-- Ajout de la date de création -->
+                        <small class="product-date" title="{{ product.date_creation|date:'d/m/Y H:i' }}">
+                            Publié il y a {{ product.date_creation|timesince }}
+                        </small>
+                    
+                    <div class="price-box">
+                      <span class="current-price">{{ product.prix }} FCFA</span>
+                      {% if product.ancien_prix %}
+                      <span class="old-price">{{ product.ancien_prix }} FCFA</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="product-actions">
+                        <button class="quick-view" data-product-id="{{ product.id }}" data-url="{% url 'produit_detail_clients' product.id %}">
+                            <i class="eye-icon"></i> Voir
+                        </button>
+
+                        <button class="add-cart" data-product-id="{{ product.id }}">
+                            <i class="cart-icon"></i> Panier
+                         </button>
+                    </div>
+                    
+                    <a href="{% url 'buy_now' product.id %}" class="buy-now-btn"><i class="fas fa-bolt"></i> Acheter maintenant</a>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            
+            <button class="nav-arrow prev-arrow" aria-label="Précédent">
+              <i class="arrow-icon"></i>
+            </button>
+            <button class="nav-arrow next-arrow" aria-label="Suivant">
+              <i class="arrow-icon"></i>
+            </button>
+          </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-title">BIGSHOP</h5>
+                    <p>La marketplace africaine leader en Côte d'Ivoire. Nous connectons les acheteurs et les vendeurs pour une expérience d'achat unique.</p>
+                    <div class="mt-3">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-title">Acheter</h5>
+                    <a href="#" class="footer-link">Produits populaires</a>
+                    <a href="#" class="footer-link">Nouveautés</a>
+                    <a href="#" class="footer-link">Promotions</a>
+                    <a href="#" class="footer-link">Tendances</a>
+                    <a href="#" class="footer-link">Catalogue</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-title">Vendre</h5>
+                    <a href="#" class="footer-link">Devenir vendeur</a>
+                    <a href="#" class="footer-link">Programme d'affiliation</a>
+                    <a href="#" class="footer-link">Ressources pour vendeurs</a>
+                    <a href="#" class="footer-link">Formations</a>
+                    <a href="#" class="footer-link">Centre d'aide</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-title">Informations</h5>
+                    <a href="#" class="footer-link">À propos de nous</a>
+                    <a href="#" class="footer-link">Contactez-nous</a>
+                    <a href="#" class="footer-link">Carrières</a>
+                    <a href="#" class="footer-link">Blog</a>
+                    <a href="#" class="footer-link">Politique de confidentialité</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Copyright -->
+    <div class="copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">© 2024 BIGSHOP. Tous droits réservés.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <img src="{% static 'images/payment-methods.png' %}" alt="Méthodes de paiement" class="img-fluid" style="max-width: 200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/owl.carousel/1.3.3/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.showcase-carousel-container').forEach(container => {
+                const track = container.querySelector('.showcase-track');
+                const prevBtn = container.querySelector('.prev-arrow');
+                const nextBtn = container.querySelector('.next-arrow');
+                const slides = container.querySelectorAll('.showcase-slide');
+        
+                if (slides.length === 0) return; // sécurité
+        
+                // Configuration
+                const slideWidth = slides[0].offsetWidth;
+                const gap = 25; // à adapter selon ton CSS
+                const scrollAmount = slideWidth + gap;
+        
+                // Auto-scroll functionality
+                let autoScrollInterval;
+                let isScrolling = false;
+        
+                function startAutoScroll() {
+                    autoScrollInterval = setInterval(() => {
+                        if (!isScrolling) {
+                            scrollToNext();
+                        }
+                    }, 3500); // Adjust timing as needed
+                }
+        
+                function scrollToNext() {
+                    isScrolling = true;
+        
+                    // Check if we've reached the end
+                    if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 50) {
+                        // Smooth scroll to start
+                        track.scrollTo({
+                            left: 0,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        // Scroll to next set of products
+                        track.scrollBy({
+                            left: scrollAmount,
+                            behavior: 'smooth'
+                        });
+                    }
+        
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 1000);
+                }
+        
+                // Manual navigation
+                prevBtn.addEventListener('click', () => {
+                    clearInterval(autoScrollInterval);
+                    track.scrollBy({
+                        left: -scrollAmount,
+                        behavior: 'smooth'
+                    });
+                    startAutoScroll();
+                });
+        
+                nextBtn.addEventListener('click', () => {
+                    clearInterval(autoScrollInterval);
+                    scrollToNext();
+                    startAutoScroll();
+                });
+        
+                // Pause on hover
+                track.addEventListener('mouseenter', () => {
+                    clearInterval(autoScrollInterval);
+                });
+        
+                track.addEventListener('mouseleave', startAutoScroll);
+        
+                // Initialize
+                startAutoScroll();
+            });
+        });
+        
+        document.querySelectorAll('.quick-view').forEach(button => {
+            button.addEventListener('click', () => {
+                const url = button.getAttribute('data-url');
+                window.location.href = url;
+            });
+        });
+
+    </script>
+</body>
+</html>
+{% endblock %}
+

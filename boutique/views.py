@@ -70,7 +70,7 @@ def buy_now(request, product_id):
     initial_data = {
         'nom': request.user.last_name if request.user.is_authenticated else '',
         'prenom': request.user.first_name if request.user.is_authenticated else '',
-        'telephone': request.user.phone_number if request.user.is_authenticated else '',
+        # 'telephone': request.user.phone_number if request.user.is_authenticated else '',
         'email': request.user.email if request.user.is_authenticated else '',
     }
 
@@ -344,7 +344,7 @@ def index(request):
         'maison': maison,
         'sacs_et_maroquinerie': sacs_et_maroquinerie,
     }
-    return render(request, 'theme1/index.html', context)
+    return render(request, 'pageIndex/index.html', context)
 
 
 
@@ -636,12 +636,7 @@ def dashboard(request):
     
     return render(request, 'boutique/dashboard.html', context)
  
-#dashboard admin   
-def index2 (request):
-    return render(request, 'theme2/index.html')  # Page d'administration
 
-def components_alerts(request):
-    return render(request, 'theme2/components-alerts.html')
 
 # Pages des clients
 @login_required

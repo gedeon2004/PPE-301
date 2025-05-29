@@ -11,7 +11,6 @@ from .views import modifier_produit
 from .views import produit_detail_clients
 from .views import afficher_panier, ajouter_au_panier, retirer_du_panier
 from .views import recherche_produits
-from .views import components_alerts
 from .views import modifier_produit, supprimer_produit
 from .views import confirmation_suppression 
 from .views import modifier_produit, supprimer_produit, restaurer_produit, supprimer_definitivement, corbeille_produits
@@ -58,9 +57,8 @@ urlpatterns = [
 
     # Routes liées au dashboard et à la gestion des produits
     path('dashboard/', views.dashboard, name='dashboard'),
-    path ('dashboard/index', views.index2, name='admin'),
+    # path ('dashboard/index', views.index2, name='admin'),
     
-    path('dashboard/components-alerts/', views.components_alerts, name='components_alerts'),
     path('produits/', views.liste_produits, name='liste_produits'),
     path('produits/gestion/', views.gestion_produits, name='gestion_produits'),
     
