@@ -90,8 +90,14 @@ class Avis(models.Model):
     
 # Modèle pour les ventes
 class Vente(models.Model):
-    date = models.DateTimeField(auto_now_add=True)  # ou simplement models.DateTimeField() si modifiable
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+    commande = models.ForeignKey('Commande', on_delete=models.SET_NULL, null=True, blank=True)
+    vendeur = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    montant = models.DecimalField(max_digits=10, decimal_places=2)
+    mode_paiement = models.CharField(max_length=50, default="Stripe")
+    date_vente = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Vente de {self.montant} FCFA par {self.vendeur.username} le {self.date_vente.strftime('%d/%m/%Y')}"
 
 # Modèle pour les articles vendus dans une vente
 class ArticleVendu(models.Model):

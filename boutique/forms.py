@@ -134,7 +134,8 @@ class ProduitForm(forms.ModelForm):
 class VenteForm(forms.ModelForm):
     class Meta:
         model = Vente
-        fields = ['total'] 
+        fields = ['montant', 'mode_paiement']  
+ 
         
 class ArticleVenduForm(forms.ModelForm):
     class Meta:

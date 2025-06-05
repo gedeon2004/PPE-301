@@ -175,38 +175,71 @@ def payment_cancel(request, order_id):
 @require_POST
 def stripe_webhook(request):
     payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
     try:
+        # Vérifie la signature
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            payload=payload,
+            sig_header=sig_header,
+            secret=settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError as e:
+        print("Payload invalide :", e)
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
+        print("Signature invalide :", e)
         return HttpResponse(status=400)
 
+    # Cas : Paiement complété avec succès
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        order_id = session.metadata.get('order_id')
+        order_id = session.get('metadata', {}).get('order_id')  # assure-toi que 'order_id' est bien mis dans Stripe Checkout
         
         if order_id:
-            order = Order.objects.get(id=order_id)
-            order.status = 'processing'
-            order.transaction_id = session.payment_intent
-            order.save()
-            
-            # Mettre à jour le stock
-            order.produit.quantite_en_stock -= order.quantite
-            order.produit.save()
-            
-            # Mettre à jour la notification
-            Notification.objects.create(
-                user=order.vendeur,
-                message=f"Paiement confirmé pour la commande #{order.id}",
-                order=order
-            )
+            try:
+                # Petite pause pour éviter conflits
+                time.sleep(1)
+                
+                # Récupérer la commande liée
+                commande = Commande.objects.get(id=order_id)
+                
+                # Marquer comme payé
+                commande.statut_paiement = 'paye'
+                commande.statut = 'termine' 
+                commande.date_paiement = timezone.now()
+                commande.save()
+
+                
+                try:
+                    produit = Produit.objects.get(commande=commande)
+                    produit.quantite_en_stock -= 1  # ou commande.quantite si tu as un champ
+                    produit.save()
+                except Produit.DoesNotExist:
+                    print("Produit non trouvé pour cette commande")
+
+                # Enregistrement de la vente
+                Vente.objects.create(
+                    vendeur=commande.vendeur,
+                    montant=commande.montant_total,
+                    mode_paiement="Stripe",
+                    commande=commande,
+                )
+
+                # Création de notification pour le vendeur
+                Notification.objects.create(
+                    user=commande.vendeur,
+                    message=f"Nouveau paiement reçu de {commande.montant_total} FCFA pour la commande #{commande.id}",
+                    order=commande
+                )
+
+                print(f" Vente enregistrée pour la commande #{commande.id}")
+
+            except Commande.DoesNotExist:
+                print(f"Commande introuvable : ID {order_id}")
+            except Exception as e:
+                print("Erreur générale dans le webhook :", str(e))
 
     return HttpResponse(status=200)
 
@@ -522,61 +555,56 @@ def liste_ventes(request):
 # Tableau de bord du vendeur (produits du vendeur connecté)
 @login_required
 def dashboard(request):
-    # Récupère tous les produits du vendeur connecté
-    produits = Produit.objects.filter(vendeur=request.user)
+    # Dates importantes
+    maintenant = timezone.now()
+    debut_mois = maintenant.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    date_limite_30j = maintenant - timedelta(days=30)
+    date_limite_7j = maintenant - timedelta(days=7)
     
-    # Commandes
+    # 1. STATISTIQUES FINANCIÈRES (basées sur Vente)
+    revenus_mois = Order.objects.filter(
+        vendeur=request.user,
+        date_commande__gte=debut_mois
+    ).aggregate(total=Sum('total'))['total'] or 0
+    
+    revenus_total = Order.objects.filter(
+        vendeur=request.user
+    ).aggregate(total=Sum('total'))['total'] or 0
+    
+    nombre_ventes_mois = Order.objects.filter(
+    vendeur=request.user,
+    date_commande__gte=debut_mois
+    ).count()
+
+    
+    # 2. STATISTIQUES COMMANDES
     commandes = Commande.objects.filter(vendeur=request.user)
+    commandes_du_mois = commandes.filter(date_commande__gte=debut_mois)
     
-    # Statistiques principales
-    total_produits = produits.count()
-    commandes_du_mois = commandes.filter(
-        date_commande__month=timezone.now().month,
-        date_commande__year=timezone.now().year
-    )
-    
-    # Calcul des revenus
-    revenus_mois = commandes_du_mois.aggregate(total=Sum('montant_total'))['total'] or 0
-    revenus_total = commandes.aggregate(total=Sum('montant_total'))['total'] or 0
-    
-    # Commandes par statut
     commandes_en_attente = commandes.filter(statut='en_attente').count()
     commandes_en_cours = commandes.filter(statut='en_cours').count()
     commandes_terminees = commandes.filter(statut='terminee').count()
     
-    # Produits en rupture de stock
+    # 3. STATISTIQUES PRODUITS
+    produits = Produit.objects.filter(vendeur=request.user)
+    total_produits = produits.count()
     produits_rupture = produits.filter(quantite_en_stock__lte=5)
     
-    # Commandes récentes (7 derniers jours)
-    date_limite = timezone.now() - timedelta(days=7)
-    commandes_recentes = commandes.filter(
-        date_commande__gte=date_limite
-    ).order_by('-date_commande')[:5]
-    
-    # Avis récents
-    avis_recents = Avis.objects.filter(
-        produit__vendeur=request.user
-    ).order_by('-date_creation')[:3]
-    
-    # Notifications non lues
-    notifications_non_lues = Notification.objects.filter(
-        user=request.user,
-        lue=False
-    ).order_by('-created_at')[:5]
-    
-    # Données pour les graphiques
+    # 4. DONNÉES POUR GRAPHIQUES
     # Ventes des 30 derniers jours
     ventes_30j = []
     dates_30j = []
-    for i in range(30, -1, -1):
-        date = timezone.now() - timedelta(days=i)
-        total_jour = commandes.filter(
-            date_commande__date=date,
-            statut='terminee'
-        ).aggregate(total=Sum('montant_total'))['total'] or 0
-        ventes_30j.append(float(total_jour))
-        dates_30j.append(date.strftime('%d/%m'))
     
+    for i in range(30, -1, -1):
+        date_jour = maintenant - timedelta(days=i)
+        total_jour = Order.objects.filter(
+            vendeur=request.user,
+            date_commande__date=date_jour
+        ).aggregate(total=Sum('total'))['total'] or 0
+        
+        ventes_30j.append(float(total_jour))
+        dates_30j.append(date_jour.strftime('%d/%m'))
+        
     # Catégories les plus vendues
     categories_vendues = produits.annotate(
         total_vendu=Sum('panierproduit__quantite')  
@@ -585,53 +613,49 @@ def dashboard(request):
     # Récupérer les noms de catégories et les totaux vendus
     categories_labels = [cat.categorie.nom for cat in categories_vendues if cat.categorie]
     categories_data = [cat.total_vendu or 0 for cat in categories_vendues]
-
-    # Récupérer les stats avec cache
-    stats = cache.get(f'stats_ventes_{request.user.id}')
     
-    if not stats:
-        stats = {
-            'ventes_mois': Commande.objects.filter(
-                statut='paye',
-                date_paiement__month=timezone.now().month
-            ).aggregate(total=Sum('montant_total'))['total'] or 0
-        }
-        cache.set(f'stats_ventes_{request.user.id}', stats, 60*15)  # Cache 15 minutes
-
-    # Mettre à jour les revenus du mois avec les données en cache
-    revenus_mois = stats['ventes_mois']
-
+    # 5. AUTRES DONNÉES
+    commandes_recentes = commandes.filter(
+        date_commande__gte=date_limite_7j
+    ).order_by('-date_commande')[:5]
+    
+    avis_recents = Avis.objects.filter(
+        produit__vendeur=request.user
+    ).order_by('-date_creation')[:3]
+    
+    notifications_non_lues = Notification.objects.filter(
+        user=request.user,
+        lue=False
+    ).order_by('-created_at')[:5]
+    
     context = {
-        # Produits
-        'produits': produits,
-        'total_produits': total_produits,
-        'produits_rupture': produits_rupture,
-        
-        # Commandes
-        'commandes': commandes,
-        'commandes_recentes': commandes_recentes,
-        'commandes_en_attente': commandes_en_attente,
-        'commandes_en_cours': commandes_en_cours,
-        'commandes_terminees': commandes_terminees,
-        
         # Finances
         'revenus_mois': revenus_mois,
         'revenus_total': revenus_total,
+        'nombre_ventes_mois': nombre_ventes_mois,
         
-        # Avis
-        'avis_recents': avis_recents,
+        # Commandes
+        'commandes_en_attente': commandes_en_attente,
+        'commandes_en_cours': commandes_en_cours,
+        'commandes_terminees': commandes_terminees,
+        'commandes_recentes': commandes_recentes,
         
-        # Notifications
-        'notifications_non_lues': notifications_non_lues,
-        'nombre_notifications': notifications_non_lues.count(),
+        # Produits
+        'total_produits': total_produits,
+        'produits_rupture': produits_rupture,
         
-        # Données graphiques
+        # Graphiques
         'ventes_30j': ventes_30j,
         'dates_30j': dates_30j,
         'categories_vendues': categories_vendues,
         
         'categories_labels': categories_labels,
         'categories_data': categories_data,
+        
+        # Autres
+        'avis_recents': avis_recents,
+        'notifications_non_lues': notifications_non_lues,
+        'nombre_notifications': notifications_non_lues.count(),
     }
     
     return render(request, 'boutique/dashboard.html', context)

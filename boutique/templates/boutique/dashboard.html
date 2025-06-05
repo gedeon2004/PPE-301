@@ -459,11 +459,22 @@
                             <div class="card-icon green">
                                 <i class="uil uil-shopping-cart"></i>
                             </div>
-                            <div class="card-value" id="ventes-mois">{{ revenus_mois|floatformat:2 }} FCFA</div>
-                            <div class="card-label">Ventes ce mois</div>
+                            
+                            <div class="card-value">
+                                {% if revenus_total > 0 %}
+                                    {{ revenus_total|floatformat:2 }} FCFA
+                                {% else %}
+                                    0.00 FCFA
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-label">
+                                <small>({{ nombre_ventes_mois }} vente{{ nombre_ventes_mois|pluralize }})</small>
+                                ce mois ({{ nombre_ventes_mois }} transaction{{ nombre_ventes_mois|pluralize }})
+                            </div>
                         </div>
                     </div>
-                    
+ 
                     <div class="col-md-3">
                         <div class="dashboard-card">
                             <div class="card-icon orange">
@@ -494,6 +505,13 @@
                         </div>
                     </div>
                     
+                    {% comment %} <div class="col-md-4">
+                        <div class="chart-container">
+                            <h5 class="chart-title">Catégories populaires</h5>
+                            <canvas id="categoryChart" height="300"></canvas>
+                        </div>
+                    </div> {% endcomment %}
+
                     <div class="col-md-4">
                         <div class="chart-container">
                             <h5 class="chart-title">Catégories populaires</h5>
@@ -642,28 +660,24 @@
     
     <script>
         // Charts
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        const salesChart = new Chart(salesCtx, {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: {{ dates_30j|safe }},
                 datasets: [{
-                    label: 'Ventes quotidiennes',
-                    data: {{ ventes_30j|safe }},    
-                    backgroundColor: 'rgba(255, 140, 0, 0.2)',
-                    borderColor: 'rgba(255, 140, 0, 1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true
+                    label: 'Ventes',
+                    data: {{ ventes_30j|safe }},
+                    borderColor: 'orange',
+                    backgroundColor: 'rgba(255,165,0,0.2)',
+                    tension: 0.2,
+                    fill: true,
+                    pointBackgroundColor: 'orange',
+                    pointBorderColor: 'orange'
                 }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
                 scales: {
                     y: {
                         beginAtZero: true
