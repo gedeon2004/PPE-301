@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/@iconscout/unicons@4.0.8/css/line.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
     <style>
         :root {
             --primary-color: #FF8C00;
@@ -399,6 +402,29 @@
             opacity: 1;
             visibility: visible;
         }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color:rgba(229, 126, 22, 0.97);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 15px 18px;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+
+        .floating-btn:hover {
+            background-color:rgb(41, 121, 46);
+            color: #fff;
+            text-decoration: none;
+        }
+
     </style>
 </head>
 <body>
@@ -644,10 +670,16 @@
                             </ul>
                         </nav>
                     </div>
+                    
                 </div>
                 {% endif %}
             </div>
+            <a href="{% url 'ajouter_produit' %}" class="floating-btn animate__animated animate__fadeInUp animate__delay-3s">
+                <i class="fas fa-plus"></i>
+            </a>
+
         </div>
+        
     </div>
 
     <!-- JavaScript -->
