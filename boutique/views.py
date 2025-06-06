@@ -54,6 +54,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from .forms import CustomLoginForm
 from django.contrib import messages
+from datetime import datetime
+from django.core.paginator import Paginator
+
+
 
 
 
@@ -624,10 +628,11 @@ def dashboard(request):
     ).order_by('-date_creation')[:3]
     
     notifications_non_lues = Notification.objects.filter(
-        user=request.user,
-        lue=False
+    user=request.user,
+    is_read=False
     ).order_by('-created_at')[:5]
-    
+
+
     context = {
         # Finances
         'revenus_mois': revenus_mois,
@@ -661,6 +666,104 @@ def dashboard(request):
     return render(request, 'boutique/dashboard.html', context)
  
 
+#Recption et lecture d'une notification 
+def lire_notification(request, notif_id):
+    notification = get_object_or_404(Notification, id=notif_id, user=request.user)
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save()
+    if notification.order:
+        return redirect('detail_commande', notification.order.id)
+    return redirect('dashboard')  # Redirige vers le tableau de bord si pas de commande associée
+
+
+
+#Suppression de la notification
+def supprimer_notification(request, notif_id):
+    notification = get_object_or_404(Notification, id=notif_id, user=request.user)
+    notification.delete()
+    return redirect(request.META.get('HTTP_REFERER', 'dashboard'))  # Redirige vers la page précédente ou le dashboard
+
+
+
+#Historique des commandes du client
+def historique_ventes(request):
+   
+    # Récupérer les paramètres de filtrage
+    status = request.GET.get('status', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    
+    # 👉 Filtrer les commandes DU VENDEUR connecté
+    orders = Order.objects.filter(vendeur=request.user).order_by('-date_commande')
+    
+    if status:
+        orders = orders.filter(status=status)
+    
+    if date_from:
+        try:
+            date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
+            orders = orders.filter(date_commande__gte=date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
+            orders = orders.filter(date_commande__lte=date_to_obj)
+        except ValueError:
+            pass
+    
+    # Statistiques globales POUR CE VENDEUR
+    total_orders = orders.count()
+    total_revenue = orders.aggregate(total=Sum('total'))['total'] or 0
+    
+    # Statistiques mensuelles
+    now = datetime.now()
+    monthly_orders = orders.filter(
+        date_commande__month=now.month,
+        date_commande__year=now.year
+    ).count()
+    
+    monthly_revenue = orders.filter(
+        date_commande__month=now.month,
+        date_commande__year=now.year
+    ).aggregate(total=Sum('total'))['total'] or 0
+    
+    # Pagination
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'orders': page_obj,
+        'total_orders': total_orders,
+        'total_revenue': total_revenue,
+        'monthly_orders': monthly_orders,
+        'monthly_revenue': monthly_revenue,
+        'current_month': now.strftime('%B %Y'),
+    }
+    
+    return render(request, 'boutique/historique_ventes.html', context)
+
+
+#Détail d'une commande 
+def detail_commande(request, order_id):
+    # Récupère la commande ou renvoie une 404 si elle n'existe pas
+    order = get_object_or_404(Order, id=order_id, client=request.user) # Ajout du client =request.user pour la sécurité
+    
+    # Marquer les notifications liées à cette commande comme lues
+    Notification.objects.filter(order=order, user=request.user, is_read=False).update(is_read=True)
+    
+    # Préparer le contexte pour le template
+    context = {
+        'order': order,
+        'produit': order.produit,  # Si votre modèle Order a un champ 'produit'
+        'items': order.items.all() if hasattr(order, 'items') else None,  # Pour les commandes avec plusieurs items
+        'now': timezone.now()  # Si vous avez besoin de la date/heure actuelle
+    }
+    
+    return render(request, 'boutique/detail_commande.html', context)
 
 # Pages des clients
 @login_required

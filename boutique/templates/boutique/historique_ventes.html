@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Produits - Vendeur Pro</title>
+    <title>Historique des Ventes - Vendeur Pro</title>
     <!-- Liens CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -218,6 +218,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 24px;
         }
         
         .card:hover {
@@ -225,27 +226,18 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         
-        /* Product Management Styles */
-        .product-img-container {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f9fa;
-            transition: all 0.3s ease;
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 16px 20px;
+            font-weight: 600;
         }
         
-        .product-img-container:hover {
-            transform: scale(1.1);
-        }
-        
-        .product-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+        /* Order Status Badges */
+        .order-status-badge {
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            font-weight: 500;
         }
         
         /* Table Styles */
@@ -256,13 +248,6 @@
         .table-hover tbody tr:hover {
             background-color: rgba(255,140,0,0.05);
             transform: scale(1.01);
-        }
-        
-        /* Badge Styles */
-        .badge {
-            font-weight: 500;
-            padding: 5px 10px;
-            border-radius: 20px;
         }
         
         /* Button Styles */
@@ -291,6 +276,13 @@
         .btn-outline-primary:hover {
             background-color: var(--primary-color);
             color: white;
+        }
+        
+        /* Badge Styles */
+        .badge {
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
         
         /* Search Input */
@@ -354,28 +346,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         
-        /* Animation Classes */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Empty State */
-        .empty-state {
-            padding: 40px 0;
-            text-align: center;
-        }
-        
-        .empty-state i {
-            font-size: 4rem;
-            color: #e0e0e0;
-            margin-bottom: 20px;
-        }
-        
         /* Tooltip for collapsed sidebar */
         .sidebar-collapsed .sidebar-nav a[data-bs-toggle="tooltip"]:after {
             content: attr(data-bs-original-title);
@@ -398,6 +368,46 @@
         .sidebar-collapsed .sidebar-nav a[data-bs-toggle="tooltip"]:hover:after {
             opacity: 1;
             visibility: visible;
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Stats Cards */
+        .stats-card {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stats-card .card-body {
+            padding: 15px;
+        }
+        
+        .stats-card h5 {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stats-card h2 {
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        /* Date Picker */
+        .date-range-picker {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
     </style>
 </head>
@@ -430,17 +440,17 @@
                         <i class="uil uil-shopping-bag"></i> <span>Boutique</span>
                     </a>
                 </li>
-                <li class="has-submenu active">
+                <li class="has-submenu">
                     <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Produits">
                         <i class="uil uil-box"></i> <span>Produits</span>
                     </a>
-                    <ul class="submenu show">
+                    <ul class="submenu">
                         <li><a href="{% url 'gestion_produits' %}"><i class="uil uil-plus-circle"></i> <span>Ajouter Produit</span></a></li>
                         <li><a href="#"><i class="uil uil-list-ul"></i> <span>Liste des Produits</span></a></li>
                         <li><a href="{% url 'corbeille_produits' %}"><i class="uil uil-trash-alt"></i> <span>Corbeille</span></a></li>
                     </ul>
                 </li>
-                <li>
+                <li class="active">
                     <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Commandes">
                         <i class="uil uil-shopping-cart"></i> <span>Commandes</span>
                     </a>
@@ -456,17 +466,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Notifications">
-                        <i class="uil uil-bell"></i> <span>Notifications</span>
-                        {% if notifications_non_lues.count > 0 %}
-                        <span class="badge bg-danger float-end">{{ notifications_non_lues.count }}</span>
-                        {% endif %}
-                    </a>
-                </li>
-                <li><a href="#"><i class="uil uil-history"></i> <span>Historique des Ventes</span></a></li>
-                <li>
                     <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="Statistiques">
                         <i class="uil uil-chart-line"></i> <span>Statistiques</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'historique_ventes' %}" data-bs-toggle="tooltip" data-bs-placement="right" title="Historique des Ventes">
+                        <i class="uil uil-history"></i> <span>Historique des Ventes</span>
                     </a>
                 </li>
                 <li>
@@ -490,13 +496,10 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0 animate__animated animate__fadeIn"><i class="fas fa-boxes mr-2"></i>Gestion des Produits</h2>
-                <div>
-                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary animate__animated animate__fadeIn animate__delay-1s">
+                <h2 class="mb-0 animate__animated animate__fadeIn"><i class="fas fa-history mr-2"></i>Historique des Ventes</h2>
+                <div class="animate__animated animate__fadeIn animate__delay-1s">
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left mr-2"></i>Retour
-                    </a>
-                    <a href="{% url 'ajouter_produit' %}" class="btn btn-success ml-2 animate__animated animate__fadeIn animate__delay-1s">
-                        <i class="fas fa-plus mr-2"></i>Ajouter
                     </a>
                 </div>
             </div>
@@ -515,50 +518,94 @@
             </div>
             {% endif %}
 
-            <!-- Filtre et recherche -->
-            <div class="card mb-4 border-0 shadow-sm animate__animated animate__fadeIn animate__delay-1s">
-                <div class="card-body p-3">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="search-box">
-                                <i class="fas fa-search search-icon"></i>
-                                <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un produit...">
-                            </div>
+            <!-- Statistiques -->
+            <div class="row mb-4 animate__animated animate__fadeIn animate__delay-1s">
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5>Commandes totales</h5>
+                            <h2>{{ total_orders }}</h2>
+                            <p class="text-muted mb-0"><i class="fas fa-calendar-alt mr-2"></i>Tous les temps</p>
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="categoryFilter">
-                                <option value="all">Toutes les catégories</option>
-                                {% for categorie in categories %}
-                                <option value="{{ categorie.id }}">{{ categorie.nom }}</option>
-                                {% endfor %}
-                            </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5>Chiffre d'affaires</h5>
+                            <h2>{{ total_revenue|floatformat:0 }} FCFA</h2>
+                            <p class="text-muted mb-0"><i class="fas fa-chart-line mr-2"></i>Total accumulé</p>
                         </div>
-                        <div class="col-md-3">
-                            <select class="form-select" id="statusFilter">
-                                <option value="all">Tous les statuts</option>
-                                <option value="in_stock">En stock</option>
-                                <option value="low_stock">Stock faible</option>
-                                <option value="out_of_stock">En rupture</option>
-                            </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5>Commandes ce mois</h5>
+                            <h2>{{ monthly_orders }}</h2>
+                            <p class="text-muted mb-0"><i class="fas fa-calendar mr-2"></i>{{ current_month }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <h5>CA ce mois</h5>
+                            <h2>{{ monthly_revenue|floatformat:0 }} FCFA</h2>
+                            <p class="text-muted mb-0"><i class="fas fa-wallet mr-2"></i>{{ current_month }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tableau des produits -->
+            <!-- Filtres -->
+            <div class="card mb-4 border-0 shadow-sm animate__animated animate__fadeIn animate__delay-1s">
+                <div class="card-body p-3">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Statut</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Tous les statuts</option>
+                                <option value="processing" {% if request.GET.status == 'processing' %}selected{% endif %}>En traitement</option>
+                                <option value="shipped" {% if request.GET.status == 'shipped' %}selected{% endif %}>Expédié</option>
+                                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Complété</option>
+                                <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Annulé</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_from" class="form-label">Du</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_to" class="form-label">Au</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter me-2"></i>Filtrer
+                            </button>
+                            <a href="{% url 'historique_ventes' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-sync-alt me-2"></i>Réinitialiser
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tableau des commandes -->
             <div class="card border-0 shadow animate__animated animate__fadeIn animate__delay-2s">
                 <div class="card-header bg-white border-0 py-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Liste des Produits</h5>
+                        <h5 class="mb-0">Liste des Commandes</h5>
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-file-export mr-2"></i>Exporter</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-print mr-2"></i>Imprimer</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i>Exporter</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i>Imprimer</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Paramètres</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Paramètres</a></li>
                             </ul>
                         </div>
                     </div>
@@ -567,56 +614,43 @@
                     <table class="table table-hover mb-0">
                         <thead class="thead-light">
                             <tr>
-                                <th style="width: 80px;">Image</th>
-                                <th>Nom</th>
-                                <th>Prix</th>
-                                <th>Stock</th>
-                                <th>Catégorie</th>
-                                <th style="width: 150px;">Actions</th>
+                                <th>N° Commande</th>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for produit in produits %}
-                            <tr data-category="{{ produit.categorie.id }}" data-name="{{ produit.nom|lower }}" data-stock="{{ produit.stock }}">
+                            {% for order in orders %}
+                            <tr>
+                                <td class="font-weight-bold">#{{ order.id }}</td>
+                                <td>{{ order.date_commande|date:"d/m/Y H:i" }}</td>
+                                <td>{{ order.client.nom_complet }}</td>
+                                <td>{{ order.get_total }} FCFA</td>
                                 <td>
-                                    <div class="product-img-container">
-                                        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" class="product-img">
-                                    </div>
-                                </td>
-                                <td class="align-middle font-weight-bold">{{ produit.nom }}</td>
-                                <td class="align-middle">{{ produit.prix }} FCFA</td>
-                                <td class="align-middle">
-                                    <span class="badge {% if produit.stock > 10 %}bg-success{% elif produit.stock > 0 %}bg-warning{% else %}bg-danger{% endif %}">
-                                        {{ produit.stock }} en stock
+                                    <span class="badge 
+                                        {% if order.status == 'completed' %}bg-success
+                                        {% elif order.status == 'processing' %}bg-primary
+                                        {% elif order.status == 'cancelled' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ order.get_status_display }}
                                     </span>
                                 </td>
-                                <td class="align-middle">
-                                    <span class="badge bg-info">{{ produit.categorie.nom }}</span>
-                                </td>
-                                <td class="align-middle">
-                                    <div class="d-flex">
-                                        <a href="{% url 'modifier_produit' produit.id %}" class="btn btn-sm btn-outline-primary mr-2" title="Modifier" data-bs-toggle="tooltip">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form method="POST" action="{% url 'confirmation_suppression' produit.id %}" class="delete-form">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer" data-bs-toggle="tooltip">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    </div>
+                                <td>
+                                    <a href="{% url 'detail_commande' order.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>Voir détail
+                                    </a>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
                                 <td colspan="6" class="text-center py-4">
                                     <div class="empty-state">
-                                        <i class="fas fa-box-open"></i>
-                                        <p class="h5 text-muted mt-3">Aucun produit trouvé</p>
-                                        <p class="text-muted mb-4">Commencez par ajouter vos premiers produits à votre boutique</p>
-                                        <a href="{% url 'ajouter_produit' %}" class="btn btn-primary">
-                                            <i class="fas fa-plus mr-2"></i>Ajouter un produit
-                                        </a>
+                                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                        <h5 class="text-muted">Aucune commande trouvée</h5>
+                                        <p class="text-muted mb-4">Vos commandes apparaîtront ici</p>
                                     </div>
                                 </td>
                             </tr>
@@ -624,23 +658,39 @@
                         </tbody>
                     </table>
                 </div>
-                {% if produits %}
+                {% if orders %}
                 <div class="card-footer bg-white border-0 py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-muted">
-                            Affichage de <span id="showingCount">1</span> à <span id="totalCount">{{ produits|length }}</span> sur {{ produits|length }} entrées
+                            Affichage de <span>{{ orders.start_index }}</span> à <span>{{ orders.end_index }}</span> sur <span>{{ orders.paginator.count }}</span> commandes
                         </div>
                         <nav aria-label="Page navigation">
                             <ul class="pagination pagination-sm mb-0">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                {% if orders.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="#">Suivant</a>
+                                    <a class="page-link" href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">&laquo; Première</a>
                                 </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ orders.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Précédent</a>
+                                </li>
+                                {% endif %}
+                                
+                                {% for num in orders.paginator.page_range %}
+                                    {% if orders.number == num %}
+                                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                                    {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">{{ num }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if orders.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ orders.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Suivant</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ orders.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}">Dernière &raquo;</a>
+                                </li>
+                                {% endif %}
                             </ul>
                         </nav>
                     </div>
@@ -653,157 +703,65 @@
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialiser les tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
-        // Toggle sidebar
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        
-        sidebarToggle.addEventListener('click', function() {
-            document.body.classList.toggle('sidebar-collapsed');
-            localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
-        });
-        
-        mobileMenuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-        });
-        
-        // Vérifier l'état du sidebar dans le localStorage
-        if (localStorage.getItem('sidebarCollapsed') === 'true') {
-            document.body.classList.add('sidebar-collapsed');
-        }
-        
-        // Gestion des sous-menus
-        const hasSubmenu = document.querySelectorAll('.has-submenu > a');
-        hasSubmenu.forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const submenu = this.parentElement.querySelector('.submenu');
-                const parent = this.parentElement;
-                
-                if (submenu.classList.contains('show')) {
-                    submenu.classList.remove('show');
-                    parent.classList.remove('active');
-                } else {
-                    // Fermer les autres sous-menus ouverts
-                    document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
-                        if (openSubmenu !== submenu) {
-                            openSubmenu.classList.remove('show');
-                            openSubmenu.parentElement.classList.remove('active');
-                        }
-                    });
-                    
-                    submenu.classList.add('show');
-                    parent.classList.add('active');
-                }
-            });
-        });
-        
-        // Filtre par catégorie
-        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
-        document.getElementById('statusFilter').addEventListener('change', filterProducts);
-        document.getElementById('searchInput').addEventListener('input', filterProducts);
-        
-        function filterProducts() {
-            const category = document.getElementById('categoryFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
-            let visibleCount = 0;
+            // Toggle sidebar
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             
-            rows.forEach(row => {
-                const rowCategory = row.getAttribute('data-category');
-                const productName = row.getAttribute('data-name');
-                const stock = parseInt(row.getAttribute('data-stock'));
-                
-                // Vérifier les filtres
-                const categoryMatch = category === 'all' || rowCategory === category;
-                const searchMatch = productName.includes(searchTerm);
-                
-                let statusMatch = true;
-                if (status === 'in_stock') statusMatch = stock > 10;
-                else if (status === 'low_stock') statusMatch = stock > 0 && stock <= 10;
-                else if (status === 'out_of_stock') statusMatch = stock === 0;
-                
-                if (categoryMatch && searchMatch && statusMatch) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
+            sidebarToggle.addEventListener('click', function() {
+                document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
             });
             
-            // Mettre à jour le compteur
-            document.getElementById('showingCount').textContent = visibleCount;
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
             
-            // Afficher un message si aucun résultat
-            const emptyRow = document.querySelector('tbody tr[style="display: none;"]:last-child');
-            if (visibleCount === 0 && emptyRow) {
-                emptyRow.style.display = '';
+            // Vérifier l'état du sidebar dans le localStorage
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.body.classList.add('sidebar-collapsed');
             }
-        }
-        
-        // Confirmation avant suppression
-        document.querySelectorAll('.delete-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Créer une modal de confirmation personnalisée
-                const modalHtml = `
-                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header border-0">
-                                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmer la suppression</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body text-center py-4">
-                                    <i class="fas fa-exclamation-triangle text-danger fa-4x mb-3"></i>
-                                    <h5>Êtes-vous sûr de vouloir supprimer ce produit ?</h5>
-                                    <p class="text-muted">Cette action est irréversible et supprimera définitivement le produit.</p>
-                                </div>
-                                <div class="modal-footer border-0 justify-content-center">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Ajouter la modal au DOM
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
-                
-                // Afficher la modal
-                const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-                modal.show();
-                
-                // Gérer la confirmation
-                document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
-                    this.submit();
-                    modal.hide();
-                });
-                
-                // Nettoyer après fermeture
-                document.getElementById('confirmDeleteModal').addEventListener('hidden.bs.modal', () => {
-                    document.getElementById('confirmDeleteModal').remove();
+            
+            // Gestion des sous-menus
+            const hasSubmenu = document.querySelectorAll('.has-submenu > a');
+            hasSubmenu.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const submenu = this.parentElement.querySelector('.submenu');
+                    const parent = this.parentElement;
+                    
+                    if (submenu.classList.contains('show')) {
+                        submenu.classList.remove('show');
+                        parent.classList.remove('active');
+                    } else {
+                        // Fermer les autres sous-menus ouverts
+                        document.querySelectorAll('.submenu.show').forEach(openSubmenu => {
+                            if (openSubmenu !== submenu) {
+                                openSubmenu.classList.remove('show');
+                                openSubmenu.parentElement.classList.remove('active');
+                            }
+                        });
+                        
+                        submenu.classList.add('show');
+                        parent.classList.add('active');
+                    }
                 });
             });
+
+            // Animation au chargement
+            setTimeout(() => {
+                document.querySelectorAll('.animate__animated').forEach(el => {
+                    el.style.opacity = '1';
+                });
+            }, 100);
         });
-        
-        // Animation au chargement
-        setTimeout(() => {
-            document.querySelectorAll('.animate__animated').forEach(el => {
-                el.style.opacity = '1';
-            });
-        }, 100);
-    });
     </script>
 </body>
-</html>
+</html> 

@@ -91,6 +91,11 @@ urlpatterns = [
     path('produit/<int:id>/ajouter/', views.ajouter_panier, name='ajouter_panier'),  # URL pour ajouter un produit au panier
     path('recu/<int:commande_id>/', client_order_view, name='client_order'),
     path('recu/<int:commande_id>/pdf/', generate_pdf, name='generate_pdf'),
+    path('notification/lire/<int:notif_id>/', views.lire_notification, name='lire_notification'),
+    path('notifications/supprimer/<int:notif_id>/', views.supprimer_notification, name='supprimer_notification'),
+    path('commande/<int:order_id>/', views.detail_commande, name='detail_commande'),
+    path('historique-ventes/', views.historique_ventes, name='historique_ventes'),
+
     
     path('panier/', afficher_panier, name='panier'),
     path('panier/ajouter/<int:produit_id>/', ajouter_au_panier, name='ajouter_au_panier'),

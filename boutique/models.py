@@ -71,7 +71,6 @@ class Order(models.Model):
 
 
 class Notification(models.Model):
-    lue = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     message = models.CharField(max_length=255)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
@@ -79,7 +78,8 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.message
+        return f"Notif: {self.message[:20]}"
+
     
 
 class Avis(models.Model):
