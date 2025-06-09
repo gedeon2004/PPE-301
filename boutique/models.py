@@ -60,7 +60,7 @@ class Order(models.Model):
     client_email = models.EmailField(null=True, blank=True)
     
     # Informations produit
-    produit = models.ForeignKey('Produit', on_delete=models.CASCADE)
+    produit = models.ForeignKey('Produit', on_delete=models.CASCADE, related_name='orders')
     vendeur = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders_received')
     quantite = models.IntegerField(default=1)
     total = models.DecimalField(max_digits=10, decimal_places=2)

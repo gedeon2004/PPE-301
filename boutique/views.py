@@ -613,9 +613,15 @@ def dashboard(request):
     categories_vendues = produits.annotate(
         total_vendu=Sum('panierproduit__quantite')  
     ).order_by('-total_vendu')[:5]
-
+    
+    categories_vendues = Categorie.objects.filter(
+        produits__vendeur=request.user
+    ).annotate(
+        total_vendu=Sum('produits__orders__quantite')
+    ).order_by('-total_vendu')[:5]
+     
     # Récupérer les noms de catégories et les totaux vendus
-    categories_labels = [cat.categorie.nom for cat in categories_vendues if cat.categorie]
+    categories_labels = [cat.nom for cat in categories_vendues if cat.nom]
     categories_data = [cat.total_vendu or 0 for cat in categories_vendues]
     
     # 5. AUTRES DONNÉES
