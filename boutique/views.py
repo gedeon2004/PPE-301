@@ -614,15 +614,33 @@ def dashboard(request):
         total_vendu=Sum('panierproduit__quantite')  
     ).order_by('-total_vendu')[:5]
     
+    
     categories_vendues = Categorie.objects.filter(
         produits__vendeur=request.user
     ).annotate(
         total_vendu=Sum('produits__orders__quantite')
     ).order_by('-total_vendu')[:5]
-     
-    # Récupérer les noms de catégories et les totaux vendus
-    categories_labels = [cat.nom for cat in categories_vendues if cat.nom]
-    categories_data = [cat.total_vendu or 0 for cat in categories_vendues]
+
+    # Palette de couleurs personnalisée (exactement 5)
+    couleurs = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+                '#858796', '#5a5c69', '#20c9a6', '#ff9f40', '#9966ff',
+                '#c9cbcf', '#fd7e14', '#17a2b8', '#6610f2', '#6f42c1',
+                '#e83e8c', '#fdc506', '#28a745', '#dc3545', '#007bff',
+                '#6c757d', '#343a40', '#ffc107', '#0dcaf0', '#198754',
+                '#d63384', '#6f42c1', '#0d6efd', '#b21f1f', '#ff6384',
+                '#36a2eb', '#ffce56', '#00a8b5', '#845ec2', '#ffc75f',
+                '#f9f871', '#0081cf', '#4dd599', '#f96f5d', '#ba68c8',
+                '#2e8b57', '#3cb371', '#48d1cc', '#deb887', '#cd5c5c'
+                ]
+
+    categories_labels = []
+    categories_data = []
+    categories_colors = []
+
+    for i, cat in enumerate(categories_vendues):
+        categories_labels.append(cat.nom)
+        categories_data.append(cat.total_vendu or 0)
+        categories_colors.append(couleurs[i % len(couleurs)])  # boucle si > couleurs
     
     # 5. AUTRES DONNÉES
     commandes_recentes = commandes.filter(
@@ -662,6 +680,7 @@ def dashboard(request):
         
         'categories_labels': categories_labels,
         'categories_data': categories_data,
+        'categories_colors': categories_colors,
         
         # Autres
         'avis_recents': avis_recents,

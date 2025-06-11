@@ -866,15 +866,14 @@
             // Categories Chart
             // Pie Chart (Diagramme circulaire)
             const ctx = document.getElementById('categoriesChart').getContext('2d');
+
             new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: [{% for cat in categories_vendues %}"{{ cat.nom }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    labels: {{ categories_labels|safe }},
                     datasets: [{
-                        data: [{% for cat in categories_vendues %}{{ cat.total_vendu|default:0 }}{% if not forloop.last %}, {% endif %}{% endfor %}],
-                        backgroundColor: [
-                            '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'
-                        ],
+                        data: {{ categories_data|safe }},
+                        backgroundColor: {{ categories_colors|safe }},
                         borderWidth: 0
                     }]
                 },
