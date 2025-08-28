@@ -68,19 +68,30 @@
         }
         
         .sidebar-brand {
-            padding: 20px;
+            padding: 30px 20px;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            transition: all var(--transition-speed) ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
         
-        .sidebar-brand img {
-            width: 50px;
-            height: 50px;
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
             border-radius: 50%;
-            margin-bottom: 10px;
-            object-fit: cover;
-            transition: all var(--transition-speed) ease;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 3px solid white;
+        }
+        
+        .logo-container img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
         }
         
         .sidebar-nav {
@@ -431,8 +442,10 @@
             </div>
             
             <div class="sidebar-brand">
-                <img src="https://via.placeholder.com/150" alt="Logo">
-                <span class="d-none d-lg-block">Vendeur Pro</span>
+                <div class="logo-container">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo Vendeur Pro">
+                </div>
+                <h4 class="mt-3">Vendeur Pro</h4>
             </div>
             
             <ul class="sidebar-nav">

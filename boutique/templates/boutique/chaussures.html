@@ -169,8 +169,8 @@
     <!-- Hero Section -->
     <section class="hero-section text-center">
         <div class="container">
-            <h1 class="display-5 fw-bold">Électroniques Premium</h1>
-            <p class="lead">Découvrez des produits high-tech à prix imbattables</p>
+            <h1 class="display-5 fw-bold">{{ categorie_nom }}</h1>
+            <p class="lead">Des chaussures stylées, confortables et accessibles.</p>
         </div>
     </section>
 
@@ -198,9 +198,10 @@
                         <button class="btn btn-cart btn-sm">
                             <i class="bi bi-cart"></i>
                         </button>
-                        <button class="btn btn-buy btn-sm">
+                        <a href="{% url 'buy_now' produit.id %}" class="btn btn-buy btn-sm">
                             <i class="bi bi-lightning"></i> Acheter
-                        </button>
+                        </a>
+                        
                     </div>
                 </div>
             </div>

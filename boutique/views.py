@@ -387,58 +387,73 @@ def index(request):
 
 def liste_electronique(request):
     try:
-        # Utilisation de related_name 'produits' défini dans le modèle
-        produits = Categorie.objects.get(nom='Electronique').produits.all()
-        
+        categorie = Categorie.objects.get(nom='Electronique')  
+        produits = categorie.produits.all()  
+
         return render(request, 'boutique/electronique.html', {
-            'electronique': produits
+            'electronique': produits,
+            'categorie_nom': categorie.nom  
         })
     except Categorie.DoesNotExist:
-        # Gestion du cas où la catégorie n'existe pas
         return render(request, 'boutique/electronique.html', {
-            'electronique': []
+            'electronique': [],
+            'categorie_nom': 'Inconnue'  
         })
+
 
 def liste_vetements(request):
     try:
-        # Utilisation de related_name 'produits' défini dans le modèle
-        produits = Categorie.objects.get(nom='Vêtements').produits.all()
+        categorie = Categorie.objects.get(nom='Vêtements')
+        produits = categorie.produits.all()
         
         return render(request, 'boutique/modes_assessoires.html', {
-            'vetements': produits
+            'vetements': produits,
+            'categorie_nom': categorie.nom  
         })
     except Categorie.DoesNotExist:
-        # Gestion du cas où la catégorie n'existe pas
         return render(request, 'boutique/modes_assessoires.html', {
-            'vetements': []
+            'vetements': [],
+            'categorie_nom': 'Inconnue'  
         })
+
         
         
-def liste_chaussures(request):
-    try:
-        # Utilisation de related_name 'produits' défini dans le modèle
-        produits = Categorie.objects.get(nom='Chaussures').produits.all()
+def liste_chaussures(request): 
+    try: 
+        categorie = Categorie.objects.get(nom='Chaussures')
+        produits = categorie.produits.all()
         
-        return render(request, 'boutique/chaussures.html', {
-            'chaussures': produits
+        return render(request, 'boutique/chaussures.html', { 
+            'chaussures': produits, 
+            'categorie_nom': categorie.nom  
+        }) 
+    
+    except Categorie.DoesNotExist: 
+        return render(request, 'boutique/chaussures.html', { 
+            'chaussures': [],
+            'categorie_nom': 'Inconnue'  
         })
-    except Categorie.DoesNotExist:
-        # Gestion du cas où la catégorie n'existe pas
-        return render(request, 'boutique/chaussures.html', {
-            'chaussures': []
-        })
+
+
+
+
         
         
 def liste_sacs(request):
     try:
-        produits = Categorie.objects.get(nom='Sacs & Maroquinerie').produits.all()
+        categorie = Categorie.objects.get(nom='Sacs & Maroquinerie')
+        produits = categorie.produits.all()
+        
         return render(request, 'boutique/sacs_maroquineries.html', {
-            'produits': produits  # Même nom de variable pour tous
+            'produits': produits,
+            'categorie_nom': categorie.nom
         })
     except Categorie.DoesNotExist:
         return render(request, 'boutique/sacs_maroquineries.html', {
-            'produits': []
+            'produits': [],
+            'categorie_nom': 'Inconnue'
         })
+
 
 
 # Liste des produits du vendeur connecté

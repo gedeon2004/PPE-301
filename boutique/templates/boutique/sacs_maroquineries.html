@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Électroniques Premium | Seweed</title>
+    <title>{{ categorie_nom }} | Seweed</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -169,8 +169,8 @@
     <!-- Hero Section -->
     <section class="hero-section text-center">
         <div class="container">
-            <h1 class="display-5 fw-bold">Électroniques Premium</h1>
-            <p class="lead">Découvrez des produits high-tech à prix imbattables</p>
+            <h1 class="display-5 fw-bold">{{ categorie_nom }} </h1>
+            <p class="lead">Affirmez votre style avec nos sacs et accessoires de maroquinerie tendance</p>
         </div>
     </section>
 
@@ -198,9 +198,9 @@
                         <button class="btn btn-cart btn-sm">
                             <i class="bi bi-cart"></i>
                         </button>
-                        <button class="btn btn-buy btn-sm">
+                        <a href="{% url 'buy_now' produit.id %}" class="btn btn-buy btn-sm">
                             <i class="bi bi-lightning"></i> Acheter
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
